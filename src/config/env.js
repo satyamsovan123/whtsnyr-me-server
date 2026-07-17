@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { z } from "zod";
 
 const booleanFromString = z.enum(["true", "false"]).transform((value) => value === "true");
@@ -50,10 +52,44 @@ function parseOrigins(value) {
   return origins;
 }
 
+let envFilesLoaded = false;
+
+function loadEnvFilesIfAvailable() {
+  if (envFilesLoaded) {
+    return;
+  }
+  envFilesLoaded = true;
+
+  if (typeof process.loadEnvFile !== "function") {
+    return;
+  }
+
+  for (const fileName of [".env.local", ".env"]) {
+    const filePath = resolve(process.cwd(), fileName);
+    if (existsSync(filePath)) {
+      process.loadEnvFile(filePath);
+    }
+  }
+}
+
 function loadConfig(source = process.env) {
+  if (source === process.env) {
+    loadEnvFilesIfAvailable();
+  }
+
   const parsed = rawSchema.safeParse(source);
   if (!parsed.success) {
     const details = parsed.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`);
+    const missingMongoUri = parsed.error.issues.some(
+      (issue) => issue.path.join(".") === "MONGO_URI" && issue.code === "invalid_type",
+    );
+
+    if (missingMongoUri) {
+      throw new Error(
+        `Invalid environment configuration: ${details.join("; ")}. Add MONGO_URI to your shell environment or create a .env file from .env.example.`,
+      );
+    }
+
     throw new Error(`Invalid environment configuration: ${details.join("; ")}`);
   }
 
@@ -113,6 +149,7 @@ function getConfig() {
 
 function resetConfigForTests() {
   cachedConfig = undefined;
+  envFilesLoaded = false;
 }
 
 export { loadConfig, getConfig, resetConfigForTests };

@@ -1,15 +1,23 @@
 {
   "name": "whtsnyr-me-server",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "description": "Enterprise-ready visitor copilot API with curated local discovery and guarded Swiggy MCP integration.",
   "type": "module",
   "main": "src/server.js",
   "engines": {
     "node": ">=22.0.0"
   },
+  "keywords": [
+    "whtsnyr.me",
+    "whtsnyr.me server"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/satyamsovan123/whtsnyr-me-server.git"
+  },
   "scripts": {
-    "dev": "node --watch src/server.js",
+    "development": "nodemon src/server.js",
     "start": "node src/server.js",
     "lint": "eslint .",
     "format": "prettier --write .",
@@ -35,6 +43,7 @@
     "@eslint/js": "^9.35.0",
     "eslint": "^9.35.0",
     "globals": "^16.3.0",
+    "nodemon": "^3.1.14",
     "prettier": "^3.6.2",
     "vitest": "^3.2.4"
   }
