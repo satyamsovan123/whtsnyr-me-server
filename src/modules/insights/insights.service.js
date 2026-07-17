@@ -1,6 +1,8 @@
 import { GoogleGenAI } from '@google/genai';
 import { getConfig } from '../../config/env.js';
-import logger from '../../config/logger.js';
+import { createLogger } from '../../config/logger.js';
+
+const logger = createLogger();
 
 let ai;
 

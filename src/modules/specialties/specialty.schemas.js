@@ -82,7 +82,7 @@ const listPublicSchema = z.object({
     .object({
       cursor: objectIdSchema.optional(),
       limit: z.coerce.number().int().min(1).max(100).default(25),
-      areaId: objectIdSchema,
+      areaId: objectIdSchema.optional(),
       q: z.string().trim().min(1).max(100).optional(),
       category: z.enum(SPECIALTY_CATEGORIES).optional(),
     })

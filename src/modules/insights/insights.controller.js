@@ -1,4 +1,4 @@
-import asyncHandler from '../../common/utils/async-handler.js';
+import { asyncHandler } from '../../common/utils/async-handler.js';
 import { sendData } from '../../common/utils/api-response.js';
 import { generateInsights } from './insights.service.js';
 

@@ -9,7 +9,7 @@ import { nearbyPlacesSchema } from "./places.schemas.js";
 
 const placesRouter = Router();
 
-placesRouter.use(authenticate, providerRateLimit);
+placesRouter.use(providerRateLimit);
 
 placesRouter.get("/nearby", validate(nearbyPlacesSchema), asyncHandler(getNearbyPlaces));
 

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getInsights } from './insights.controller.js';
-import validate from '../../common/middleware/validate.js';
+import { validate } from '../../common/middleware/validate.js';
 import { z } from 'zod';
 
 const generateInsightsSchema = z.object({
