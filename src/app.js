@@ -16,6 +16,7 @@ import { adminReportRouter, reportRouter } from "./modules/reports/report.routes
 import { adminSpecialtyRouter, specialtyRouter } from "./modules/specialties/specialty.routes.js";
 import { weatherRouter } from "./modules/weather/weather.routes.js";
 import { adminAlertRouter, alertRouter } from "./modules/alerts/alerts.routes.js";
+import { insightsRouter } from './modules/insights/insights.routes.js';
 
 const API_PREFIX = "/api/v1";
 
@@ -68,6 +69,7 @@ function createApp() {
   app.use(`${API_PREFIX}/admin/reports`, adminReportRouter);
   app.use(`${API_PREFIX}/weather`, weatherRouter);
   app.use(`${API_PREFIX}/alerts`, alertRouter);
+  app.use(`${API_PREFIX}/insights`, insightsRouter);
   app.use(`${API_PREFIX}/admin/alerts`, adminAlertRouter);
 
   app.use(notFoundHandler);

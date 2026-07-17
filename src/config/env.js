@@ -23,6 +23,7 @@ const rawSchema = z
     SWIGGY_MCP_BASE_URL: z.string().url().default("https://mcp.swiggy.com"),
     SWIGGY_OAUTH_REDIRECT_URI: z.string().url().optional(),
     SWIGGY_CLIENT_ID: z.string().optional(),
+    GEMINI_API_KEY: z.string().optional(),
     SWIGGY_DYNAMIC_CLIENT_REGISTRATION_ENABLED: booleanFromString.optional(),
     SWIGGY_WRITES_ENABLED: booleanFromString.default(false),
     SWIGGY_REQUEST_TIMEOUT_MS: z.coerce.number().int().min(1000).max(30000).default(10000),
