@@ -3,6 +3,7 @@ import { sendData } from "../../common/utils/api-response.js";
 import { catalogModels } from "../catalog/catalog.service.js";
 import { ContentReport } from "./content-report.model.js";
 
+/** Applies cursor pagination and computes next cursor metadata. */
 function pagination(documentList, limit) {
   const hasMore = documentList.length > limit;
   if (hasMore) documentList.pop();
@@ -12,6 +13,7 @@ function pagination(documentList, limit) {
   };
 }
 
+/** Creates a new content report for a published catalog entity. */
 async function createReport(request, response) {
   const { target, reason, details } = request.validated.body;
   const exists = await catalogModels[target.type].exists({
@@ -30,6 +32,7 @@ async function createReport(request, response) {
   return sendData(response, report, { status: 201 });
 }
 
+/** Lists reports created by the authenticated user. */
 async function listOwnReports(request, response) {
   const { cursor, limit, status } = request.validated.query;
   const reports = await ContentReport.find({
@@ -44,6 +47,7 @@ async function listOwnReports(request, response) {
   return sendData(response, result.data, { meta: result.meta });
 }
 
+/** Returns one report belonging to the authenticated user. */
 async function getOwnReport(request, response) {
   const report = await ContentReport.findOne({
     _id: request.validated.params.id,
@@ -53,6 +57,7 @@ async function getOwnReport(request, response) {
   return sendData(response, report);
 }
 
+/** Lists all reports for moderator/admin workflows. */
 async function listAllReports(request, response) {
   const { cursor, limit, status } = request.validated.query;
   const reports = await ContentReport.find({
@@ -66,6 +71,7 @@ async function listAllReports(request, response) {
   return sendData(response, result.data, { meta: result.meta });
 }
 
+/** Updates report moderation fields with optimistic locking. */
 async function updateReport(request, response) {
   const { expectedVersion, ...patch } = request.validated.body;
   if (patch.status === "RESOLVED" || patch.status === "REJECTED") {

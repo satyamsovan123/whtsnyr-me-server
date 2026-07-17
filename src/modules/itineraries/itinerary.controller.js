@@ -3,6 +3,7 @@ import { sendData } from "../../common/utils/api-response.js";
 import { Itinerary } from "./itinerary.model.js";
 import { buildPlan } from "./planner.service.js";
 
+/** Generates and persists a new itinerary draft. */
 async function planItinerary(request, response) {
   const plan = await buildPlan(request.validated.body);
   const itinerary = await Itinerary.create({
@@ -18,6 +19,7 @@ async function planItinerary(request, response) {
   return sendData(response, itinerary, { status: 201 });
 }
 
+/** Lists itineraries owned by the authenticated user. */
 async function listItineraries(request, response) {
   const { cursor, limit, status } = request.validated.query;
   const documents = await Itinerary.find({
@@ -35,6 +37,7 @@ async function listItineraries(request, response) {
   });
 }
 
+/** Returns one itinerary owned by the authenticated user. */
 async function getItinerary(request, response) {
   const itinerary = await Itinerary.findOne({
     _id: request.validated.params.id,
@@ -44,6 +47,7 @@ async function getItinerary(request, response) {
   return sendData(response, itinerary);
 }
 
+/** Updates mutable itinerary fields with optimistic locking. */
 async function updateItinerary(request, response) {
   const { expectedVersion, ...patch } = request.validated.body;
   const itinerary = await Itinerary.findOneAndUpdate(
@@ -60,6 +64,7 @@ async function updateItinerary(request, response) {
   return sendData(response, itinerary);
 }
 
+/** Rebuilds itinerary suggestions using updated constraints. */
 async function replanItinerary(request, response) {
   const current = await Itinerary.findOne({
     _id: request.validated.params.id,
@@ -115,6 +120,7 @@ async function replanItinerary(request, response) {
   return sendData(response, itinerary);
 }
 
+/** Internal helper that transitions itinerary status with version checks. */
 async function transition(request, response, status) {
   const itinerary = await Itinerary.findOneAndUpdate(
     {
@@ -130,10 +136,12 @@ async function transition(request, response, status) {
   return sendData(response, itinerary);
 }
 
+/** Marks an itinerary as saved. */
 function saveItinerary(request, response) {
   return transition(request, response, "SAVED");
 }
 
+/** Archives an itinerary. */
 function archiveItinerary(request, response) {
   return transition(request, response, "ARCHIVED");
 }

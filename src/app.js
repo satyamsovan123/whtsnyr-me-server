@@ -5,6 +5,7 @@ import { notFoundHandler } from "./common/middleware/not-found.js";
 import { apiRateLimit } from "./common/middleware/rate-limit.js";
 import { sendData } from "./common/utils/api-response.js";
 import { getConfig } from "./config/env.js";
+import { registerSwagger } from "./docs/swagger.js";
 import { adminUserRouter, authRouter, meRouter } from "./modules/auth/auth.routes.js";
 import { adminCatalogRouter, catalogRouter } from "./modules/catalog/catalog.routes.js";
 import { commerceActionRouter } from "./modules/commerce/commerce.routes.js";
@@ -18,6 +19,9 @@ import { adminReportRouter, reportRouter } from "./modules/reports/report.routes
 
 const API_PREFIX = "/api/v1";
 
+/**
+ * Applies CORS headers for allowed origins and short-circuits preflight requests.
+ */
 function allowCors(request, response, next) {
   const origin = request.get("origin");
   const { corsOrigins } = getConfig();
@@ -32,6 +36,9 @@ function allowCors(request, response, next) {
   return next();
 }
 
+/**
+ * Creates and configures the Express application with middleware, routes, docs, and handlers.
+ */
 function createApp() {
   const app = express();
   const config = getConfig();
@@ -40,6 +47,7 @@ function createApp() {
   app.disable("x-powered-by");
   app.use(allowCors);
   app.use(express.json({ limit: "1mb" }));
+  registerSwagger(app, API_PREFIX);
   app.use(API_PREFIX, apiRateLimit);
 
   app.get(`${API_PREFIX}/health`, (_request, response) => sendData(response, { status: "ok" }));

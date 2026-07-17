@@ -3,6 +3,9 @@ import { connectDatabase } from "./config/database.js";
 import { getConfig } from "./config/env.js";
 import { createLogger } from "./config/logger.js";
 
+/**
+ * Boots database and HTTP server, and registers graceful shutdown handlers.
+ */
 async function startServer() {
   const config = getConfig();
   const logger = createLogger();

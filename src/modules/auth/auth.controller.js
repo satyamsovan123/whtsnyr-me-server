@@ -3,20 +3,24 @@ import { notFound } from "../../common/errors/app-error.js";
 import { User } from "./user.model.js";
 import { loginUser, registerUser } from "./auth.service.js";
 
+/** Registers a new user account. */
 async function register(request, response) {
   const payload = await registerUser(request.validated.body);
   return sendData(response, payload, { status: 201 });
 }
 
+/** Authenticates a user and returns access credentials. */
 async function login(request, response) {
   const payload = await loginUser(request.validated.body);
   return sendData(response, payload);
 }
 
+/** Returns the currently authenticated user profile. */
 async function getMe(request, response) {
   return sendData(response, request.auth.user.toJSON());
 }
 
+/** Updates profile fields for the authenticated user. */
 async function updateMe(request, response) {
   const user = await User.findOneAndUpdate(
     { _id: request.auth.userId, status: "ACTIVE" },
@@ -27,6 +31,7 @@ async function updateMe(request, response) {
   return sendData(response, user);
 }
 
+/** Lists users with cursor pagination and optional status filter. */
 async function listUsers(request, response) {
   const { cursor, limit, status } = request.validated.query;
   const filter = {
@@ -43,6 +48,7 @@ async function listUsers(request, response) {
   });
 }
 
+/** Updates account status for a target user. */
 async function updateUserStatus(request, response) {
   const user = await User.findByIdAndUpdate(
     request.validated.params.id,
@@ -53,6 +59,7 @@ async function updateUserStatus(request, response) {
   return sendData(response, user);
 }
 
+/** Replaces user roles for a target user. */
 async function updateUserRoles(request, response) {
   const roles = [...new Set(request.validated.body.roles)];
   const user = await User.findByIdAndUpdate(

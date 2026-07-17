@@ -9,6 +9,7 @@ import {
   updateCommerceAction,
 } from "./commerce.service.js";
 
+/** Creates a new commerce action intent for the authenticated user. */
 async function createAction(request, response) {
   return sendData(
     response,
@@ -17,6 +18,7 @@ async function createAction(request, response) {
   );
 }
 
+/** Updates mutable fields for an existing commerce action. */
 async function updateAction(request, response) {
   return sendData(
     response,
@@ -28,6 +30,7 @@ async function updateAction(request, response) {
   );
 }
 
+/** Executes preview flow for a commerce action. */
 async function previewAction(request, response) {
   return sendData(
     response,
@@ -39,6 +42,7 @@ async function previewAction(request, response) {
   );
 }
 
+/** Confirms a commerce action with idempotency guarantees. */
 async function confirmAction(request, response) {
   return sendData(
     response,
@@ -52,6 +56,7 @@ async function confirmAction(request, response) {
   );
 }
 
+/** Cancels a commerce action. */
 async function cancelAction(request, response) {
   return sendData(
     response,
@@ -63,11 +68,13 @@ async function cancelAction(request, response) {
   );
 }
 
+/** Lists commerce actions with pagination for the authenticated user. */
 async function listActions(request, response) {
   const result = await listCommerceActions(request.auth.userId, request.validated.query);
   return sendData(response, result.documents, { meta: result.meta });
 }
 
+/** Returns one commerce action by id for the authenticated user. */
 async function getAction(request, response) {
   return sendData(
     response,
