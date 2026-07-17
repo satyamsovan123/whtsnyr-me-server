@@ -7,7 +7,6 @@ function problemResponse(code, detail) {
       .status(429)
       .type("application/problem+json")
       .json({
-        type: `https://api.whtsnyr.me/problems/${code.toLowerCase()}`,
         title: code,
         status: 429,
         detail,

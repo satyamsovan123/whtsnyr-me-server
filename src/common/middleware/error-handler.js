@@ -45,7 +45,6 @@ function errorHandler(error, request, response, _next) {
   );
 
   const body = {
-    type: `https://api.whtsnyr.me/problems/${normalized.code.toLowerCase()}`,
     title: normalized.code,
     status,
     detail:
