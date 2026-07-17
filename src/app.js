@@ -11,6 +11,7 @@ import { adminCatalogRouter, catalogRouter } from "./modules/catalog/catalog.rou
 import { commerceActionRouter } from "./modules/commerce/commerce.routes.js";
 import { itineraryRouter } from "./modules/itineraries/itinerary.routes.js";
 import { oauthRouter, providerConnectionRouter, swiggyCommerceRouter } from "./modules/providers/swiggy.routes.js";
+import { placesRouter } from "./modules/providers/places.routes.js";
 import { adminReportRouter, reportRouter } from "./modules/reports/report.routes.js";
 import { adminSpecialtyRouter, specialtyRouter } from "./modules/specialties/specialty.routes.js";
 import { weatherRouter } from "./modules/weather/weather.routes.js";
@@ -59,6 +60,7 @@ function createApp() {
   app.use(`${API_PREFIX}/specialties`, specialtyRouter);
   app.use(`${API_PREFIX}/itineraries`, itineraryRouter);
   app.use(`${API_PREFIX}/commerce/actions`, commerceActionRouter);
+  app.use(`${API_PREFIX}/providers/places`, placesRouter);
   app.use(`${API_PREFIX}/providers`, providerConnectionRouter);
   app.use(`${API_PREFIX}/oauth`, oauthRouter);
   app.use(`${API_PREFIX}/swiggy`, swiggyCommerceRouter);

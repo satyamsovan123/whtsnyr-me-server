@@ -31,6 +31,7 @@ const rawSchema = z
     GEOCODER_USER_AGENT: z.string().min(5).default("whtsnyr-me/1.0 (local-development)"),
     WEATHER_CACHE_TTL_MS: z.coerce.number().int().min(0).default(1_800_000),
     ALERTS_RSS_CACHE_TTL_MS: z.coerce.number().int().min(0).default(900_000),
+    GOOGLE_MAPS_API_KEY: z.string().optional(),
   })
   .passthrough();
 
@@ -141,6 +142,9 @@ function loadConfig(source = process.env) {
       enabled: raw.GEOCODING_ENABLED,
       baseUrl: raw.GEOCODER_BASE_URL.replace(/\/$/, ""),
       userAgent: raw.GEOCODER_USER_AGENT,
+    },
+    googleMaps: {
+      apiKey: raw.GOOGLE_MAPS_API_KEY || "",
     },
     weather: {
       cacheTtlMs: raw.WEATHER_CACHE_TTL_MS,

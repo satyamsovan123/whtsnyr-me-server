@@ -524,6 +524,20 @@ function buildOpenApiSpec(apiPrefix) {
             },
           },
         },
+        [`${apiPrefix}/providers/places/nearby`]: {
+          get: {
+            tags: ["Providers"],
+            summary: "Get dynamic nearby places from Google Maps",
+            security: secured,
+            parameters: [
+              { name: "latitude", in: "query", required: true, schema: { type: "number" } },
+              { name: "longitude", in: "query", required: true, schema: { type: "number" } },
+              { name: "type", in: "query", required: false, schema: { type: "string", default: "tourist_attraction" } },
+              { name: "radius", in: "query", required: false, schema: { type: "number", default: 1500 } },
+            ],
+            responses: { 200: { $ref: "#/components/responses/Success" } },
+          },
+        },
         [`${apiPrefix}/oauth/swiggy/callback`]: {
           get: {
             tags: ["OAuth"],
