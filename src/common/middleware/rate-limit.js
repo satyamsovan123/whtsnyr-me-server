@@ -3,16 +3,13 @@ import { MESSAGES } from "../constants/index.js";
 
 function problemResponse(code, detail) {
   return (request, response) =>
-    response
-      .status(429)
-      .type("application/problem+json")
-      .json({
-        title: code,
-        status: 429,
-        detail,
-        code,
-        instance: request.originalUrl,
-      });
+    response.status(429).type("application/problem+json").json({
+      title: code,
+      status: 429,
+      detail,
+      code,
+      instance: request.originalUrl,
+    });
 }
 
 const apiRateLimit = rateLimit({
