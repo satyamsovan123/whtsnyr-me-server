@@ -11,6 +11,7 @@ function validate(schema) {
     });
 
     if (!result.success) {
+      console.error('Validation error for', request.originalUrl, result.error.issues);
       return next(
         badRequest(
           "VALIDATION_ERROR",

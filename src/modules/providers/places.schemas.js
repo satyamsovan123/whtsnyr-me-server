@@ -9,8 +9,7 @@ const nearbyPlacesSchema = z.object({
       longitude: z.coerce.number().min(-180).max(180),
       type: z.string().trim().max(50).default("tourist_attraction"),
       radius: z.coerce.number().min(100).max(50000).default(1500),
-    })
-    .strict(),
+    }),
   headers: z.object({}).passthrough(),
 });
 

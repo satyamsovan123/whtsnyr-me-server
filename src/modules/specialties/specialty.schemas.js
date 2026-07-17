@@ -85,8 +85,7 @@ const listPublicSchema = z.object({
       areaId: objectIdSchema.optional(),
       q: z.string().trim().min(1).max(100).optional(),
       category: z.enum(SPECIALTY_CATEGORIES).optional(),
-    })
-    .strict(),
+    }),
   headers: z.object({}).passthrough(),
 });
 
