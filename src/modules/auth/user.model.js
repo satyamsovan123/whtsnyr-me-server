@@ -1,0 +1,48 @@
+import mongoose from "mongoose";
+
+import { MOBILITY_OPTIONS, USER_ROLES, USER_STATUSES } from "../../common/constants/index.js";
+
+const userSchema = new mongoose.Schema(
+  {
+    email: { type: String, required: true, trim: true },
+    emailCanonical: { type: String, required: true, unique: true, select: false },
+    passwordHash: { type: String, required: true, select: false },
+    displayName: { type: String, required: true, trim: true, maxlength: 80 },
+    roles: {
+      type: [{ type: String, enum: USER_ROLES }],
+      default: ["VISITOR"],
+      required: true,
+    },
+    status: { type: String, enum: USER_STATUSES, default: "ACTIVE", index: true },
+    emailVerifiedAt: { type: Date },
+    authorizationVersion: { type: Number, default: 1, min: 1, select: false },
+    preferences: {
+      dietary: [{ type: String, maxlength: 40 }],
+      interests: [{ type: String, maxlength: 40 }],
+      mobility: {
+        type: String,
+        enum: MOBILITY_OPTIONS,
+        default: "STANDARD",
+      },
+    },
+  },
+  {
+    timestamps: true,
+    optimisticConcurrency: true,
+    toJSON: {
+      transform(_document, value) {
+        delete value.__v;
+        delete value.passwordHash;
+        delete value.emailCanonical;
+        delete value.authorizationVersion;
+        return value;
+      },
+    },
+  },
+);
+
+userSchema.index({ status: 1, createdAt: -1 });
+
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+
+export { USER_ROLES, USER_STATUSES, User };

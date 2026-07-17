@@ -1,0 +1,118 @@
+import { createHash } from "node:crypto";
+import { z } from "zod";
+
+const booleanFromString = z.enum(["true", "false"]).transform((value) => value === "true");
+
+const rawSchema = z
+  .object({
+    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    PORT: z.coerce.number().int().min(1).max(65535).default(3000),
+    MONGO_URI: z.string().min(1, "MONGO_URI is required"),
+    CORS_ORIGINS: z.string().default("http://localhost:4200"),
+    FRONTEND_URL: z.string().url().default("http://localhost:4200"),
+    TRUST_PROXY: z.coerce.number().int().min(0).max(10).default(0),
+    LOG_FILE_PATH: z.string().default("logs/app.log"),
+    JWT_ACCESS_SECRET: z.string().optional(),
+    TOKEN_ENCRYPTION_KEY: z.string().optional(),
+    TOKEN_ENCRYPTION_KEY_VERSION: z.string().default("v1"),
+    ACCESS_TOKEN_TTL: z.string().default("15m"),
+    API_BASE_URL: z.string().url().default("http://localhost:3000/api/v1"),
+    SWIGGY_BASE_URL: z.string().url().default("https://mcp.swiggy.com"),
+    SWIGGY_MCP_BASE_URL: z.string().url().default("https://mcp.swiggy.com"),
+    SWIGGY_OAUTH_REDIRECT_URI: z.string().url().optional(),
+    SWIGGY_CLIENT_ID: z.string().optional(),
+    SWIGGY_DYNAMIC_CLIENT_REGISTRATION_ENABLED: booleanFromString.optional(),
+    SWIGGY_WRITES_ENABLED: booleanFromString.default(false),
+    SWIGGY_REQUEST_TIMEOUT_MS: z.coerce.number().int().min(1000).max(30000).default(10000),
+    GEOCODING_ENABLED: booleanFromString.default(true),
+    GEOCODER_BASE_URL: z.string().url().default("https://nominatim.openstreetmap.org"),
+    GEOCODER_USER_AGENT: z.string().min(5).default("whtsnyr-me/1.0 (local-development)"),
+  })
+  .passthrough();
+
+function developmentSecret(label) {
+  return createHash("sha256").update(`whtsnyr-local-only:${label}`).digest("hex");
+}
+
+function parseOrigins(value) {
+  const origins = value
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  for (const origin of origins) {
+    const parsed = new URL(origin);
+    if (parsed.origin !== origin || parsed.pathname !== "/") {
+      throw new Error(`CORS origin must be an exact origin without a path: ${origin}`);
+    }
+  }
+
+  return origins;
+}
+
+function loadConfig(source = process.env) {
+  const parsed = rawSchema.safeParse(source);
+  if (!parsed.success) {
+    const details = parsed.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`);
+    throw new Error(`Invalid environment configuration: ${details.join("; ")}`);
+  }
+
+  const raw = parsed.data;
+  const isProduction = raw.NODE_ENV === "production";
+  const accessSecret = raw.JWT_ACCESS_SECRET || developmentSecret("access-token");
+  const apiBaseUrl = raw.API_BASE_URL.replace(/\/$/, "");
+
+  if (isProduction && (!raw.JWT_ACCESS_SECRET || raw.JWT_ACCESS_SECRET.length < 32)) {
+    throw new Error("JWT_ACCESS_SECRET must contain at least 32 characters in production");
+  }
+  if (isProduction && !raw.TOKEN_ENCRYPTION_KEY) {
+    throw new Error("TOKEN_ENCRYPTION_KEY is required in production");
+  }
+
+  return Object.freeze({
+    env: raw.NODE_ENV,
+    isProduction,
+    port: raw.PORT,
+    mongoUri: raw.MONGO_URI,
+    corsOrigins: parseOrigins(raw.CORS_ORIGINS),
+    frontendUrl: raw.FRONTEND_URL,
+    apiBaseUrl,
+    trustProxy: raw.TRUST_PROXY,
+    logFilePath: raw.LOG_FILE_PATH,
+    auth: {
+      accessSecret,
+      accessTokenTtl: raw.ACCESS_TOKEN_TTL,
+    },
+    encryption: {
+      key: raw.TOKEN_ENCRYPTION_KEY,
+      keyVersion: raw.TOKEN_ENCRYPTION_KEY_VERSION,
+    },
+    swiggy: {
+      baseUrl: raw.SWIGGY_BASE_URL.replace(/\/$/, ""),
+      mcpBaseUrl: raw.SWIGGY_MCP_BASE_URL.replace(/\/$/, ""),
+      redirectUri: raw.SWIGGY_OAUTH_REDIRECT_URI || `${apiBaseUrl}/oauth/swiggy/callback`,
+      clientId: raw.SWIGGY_CLIENT_ID,
+      dcrEnabled: raw.SWIGGY_DYNAMIC_CLIENT_REGISTRATION_ENABLED ?? raw.NODE_ENV !== "production",
+      writesEnabled: raw.SWIGGY_WRITES_ENABLED,
+      timeoutMs: raw.SWIGGY_REQUEST_TIMEOUT_MS,
+    },
+    geocoding: {
+      enabled: raw.GEOCODING_ENABLED,
+      baseUrl: raw.GEOCODER_BASE_URL.replace(/\/$/, ""),
+      userAgent: raw.GEOCODER_USER_AGENT,
+    },
+  });
+}
+
+let cachedConfig;
+
+function getConfig() {
+  cachedConfig ||= loadConfig();
+  return cachedConfig;
+}
+
+function resetConfigForTests() {
+  cachedConfig = undefined;
+}
+
+export { loadConfig, getConfig, resetConfigForTests };
