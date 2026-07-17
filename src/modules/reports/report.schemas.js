@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { REPORT_REASONS, REPORT_STATUSES } from "../../common/constants/index.js";
+import {
+  REPORT_REASONS,
+  REPORT_STATUSES,
+  REPORT_TARGET_TYPES,
+} from "../../common/constants/index.js";
 import { objectIdSchema } from "../auth/auth.schemas.js";
 
 const createReportSchema = z.object({
@@ -8,7 +12,7 @@ const createReportSchema = z.object({
     .object({
       target: z
         .object({
-          type: z.enum(["areas", "places", "events", "merchants"]),
+          type: z.enum(REPORT_TARGET_TYPES),
           id: objectIdSchema,
         })
         .strict(),

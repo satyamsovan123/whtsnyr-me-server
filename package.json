@@ -2,11 +2,13 @@
   "name": "whtsnyr-me-server",
   "version": "1.0.0",
   "private": false,
+  "author": "satyamsovan123",
+  "license": "ISC",
   "description": "Enterprise-ready visitor copilot API with curated local discovery and guarded Swiggy MCP integration.",
   "type": "module",
   "main": "src/server.js",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=24.0.0"
   },
   "keywords": [
     "whtsnyr.me",
@@ -18,7 +20,7 @@
   },
   "scripts": {
     "development": "nodemon src/server.js",
-    "start": "node src/server.js",
+    "production": "node src/server.js",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

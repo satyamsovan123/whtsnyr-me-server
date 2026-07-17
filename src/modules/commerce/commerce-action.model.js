@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
-import { COMMERCE_STATES } from "../../common/constants/index.js";
+import { COMMERCE_OPERATIONS, COMMERCE_STATES, PROVIDERS } from "../../common/constants/index.js";
 
 const commerceActionSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
-    provider: { type: String, enum: ["SWIGGY"], required: true, default: "SWIGGY" },
-    operation: { type: String, enum: ["DINEOUT_BOOKING"], required: true },
+    provider: { type: String, enum: PROVIDERS, required: true, default: "SWIGGY" },
+    operation: { type: String, enum: COMMERCE_OPERATIONS, required: true },
     state: { type: String, enum: COMMERCE_STATES, required: true, default: "DRAFT" },
     intent: {
       restaurantId: { type: String, required: true, maxlength: 200 },

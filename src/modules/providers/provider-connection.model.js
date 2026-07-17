@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+import { PROVIDERS, PROVIDER_CONNECTION_STATUSES } from "../../common/constants/index.js";
+
 const encryptedEnvelopeSchema = new mongoose.Schema(
   {
     algorithm: { type: String, enum: ["A256GCM"], required: true },
@@ -14,10 +16,10 @@ const encryptedEnvelopeSchema = new mongoose.Schema(
 const providerConnectionSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    provider: { type: String, enum: ["SWIGGY"], required: true },
+    provider: { type: String, enum: PROVIDERS, required: true },
     status: {
       type: String,
-      enum: ["CONNECTED", "EXPIRED", "REVOKED", "ERROR"],
+      enum: PROVIDER_CONNECTION_STATUSES,
       required: true,
       default: "CONNECTED",
       index: true,

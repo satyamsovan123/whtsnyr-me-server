@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 
+import { PROVIDERS } from "../../common/constants/index.js";
+
 const providerClientSchema = new mongoose.Schema(
   {
-    provider: { type: String, enum: ["SWIGGY"], required: true },
+    provider: { type: String, enum: PROVIDERS, required: true },
     redirectUri: { type: String, required: true, maxlength: 1000 },
     clientId: { type: String, required: true, maxlength: 500 },
     registeredAt: { type: Date, required: true, default: Date.now },

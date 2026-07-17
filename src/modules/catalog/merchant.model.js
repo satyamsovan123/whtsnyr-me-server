@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
-import { PRICE_BANDS } from "./catalog.constants.js";
+import {
+  FULFILLMENT_MODES,
+  MERCHANT_VERIFICATION_STATUSES,
+  PRICE_BANDS,
+} from "./catalog.constants.js";
 import {
   catalogSchemaOptions,
   commonCatalogFields,
@@ -17,16 +21,14 @@ const merchantSchema = new mongoose.Schema(
     categories: [{ type: String, required: true, trim: true, lowercase: true, maxlength: 60 }],
     craftProvenance: { type: String, maxlength: 1200 },
     priceBand: { type: String, enum: PRICE_BANDS, default: "BUDGET" },
-    fulfillmentModes: [
-      { type: String, enum: ["PICKUP", "LOCAL_DELIVERY", "NATIONAL_SHIPPING", "CONTACT_ONLY"] },
-    ],
+    fulfillmentModes: [{ type: String, enum: FULFILLMENT_MODES }],
     contact: {
       phone: { type: String, maxlength: 30 },
       website: { type: String, maxlength: 1000 },
     },
     verificationStatus: {
       type: String,
-      enum: ["UNVERIFIED", "PENDING", "VERIFIED", "REJECTED"],
+      enum: MERCHANT_VERIFICATION_STATUSES,
       default: "UNVERIFIED",
       index: true,
     },

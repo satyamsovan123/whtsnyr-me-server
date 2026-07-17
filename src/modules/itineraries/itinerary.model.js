@@ -1,8 +1,15 @@
 import mongoose from "mongoose";
 
+import {
+  GEO_POINT_TYPES,
+  ITINERARY_DURATION_HOURS,
+  ITINERARY_STATUSES,
+  MOBILITY_OPTIONS,
+} from "../../common/constants/index.js";
+
 const pointSchema = new mongoose.Schema(
   {
-    type: { type: String, enum: ["Point"], default: "Point", required: true },
+    type: { type: String, enum: GEO_POINT_TYPES, default: "Point", required: true },
     coordinates: { type: [Number], required: true },
   },
   { _id: false },
@@ -36,7 +43,7 @@ const itinerarySchema = new mongoose.Schema(
     title: { type: String, required: true, trim: true, maxlength: 120 },
     notes: { type: String, trim: true, maxlength: 2000 },
     constraints: {
-      durationHours: { type: Number, enum: [2, 4, 8], required: true },
+      durationHours: { type: Number, enum: ITINERARY_DURATION_HOURS, required: true },
       startAt: { type: Date, required: true },
       budgetMinor: { type: Number, min: 0 },
       groupSize: { type: Number, min: 1, max: 30, default: 1 },
@@ -44,7 +51,7 @@ const itinerarySchema = new mongoose.Schema(
       placeTypes: [{ type: String, maxlength: 40 }],
       mobility: {
         type: String,
-        enum: ["STANDARD", "LOW_WALKING", "WHEELCHAIR_ACCESSIBLE"],
+        enum: MOBILITY_OPTIONS,
         default: "STANDARD",
       },
       indoorPreference: { type: Boolean },
@@ -61,7 +68,7 @@ const itinerarySchema = new mongoose.Schema(
     plannerNotes: [{ type: String, maxlength: 300 }],
     status: {
       type: String,
-      enum: ["DRAFT", "SAVED", "ARCHIVED"],
+      enum: ITINERARY_STATUSES,
       default: "DRAFT",
       index: true,
     },

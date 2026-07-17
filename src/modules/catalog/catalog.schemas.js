@@ -1,7 +1,14 @@
 import { z } from "zod";
 
 import { objectIdSchema } from "../auth/auth.schemas.js";
-import { CATALOG_STATUSES, PLACE_TYPES, PRICE_BANDS } from "./catalog.constants.js";
+import {
+  CATALOG_STATUSES,
+  FULFILLMENT_MODES,
+  MERCHANT_VERIFICATION_STATUSES,
+  PLACE_TYPES,
+  PRICE_BANDS,
+  SOURCE_TYPES,
+} from "./catalog.constants.js";
 
 const geoInput = z
   .object({
@@ -14,7 +21,7 @@ const sourceRef = z
   .object({
     url: z.string().url().max(1000),
     label: z.string().trim().max(120).optional(),
-    sourceType: z.enum(["OFFICIAL", "CURATOR", "MERCHANT", "OPEN_DATA", "OTHER"]),
+    sourceType: z.enum(SOURCE_TYPES),
   })
   .strict();
 
@@ -112,10 +119,7 @@ const merchantInput = z
     categories: z.array(z.string().trim().min(1).max(60)).min(1).max(20),
     craftProvenance: z.string().trim().max(1200).optional(),
     priceBand: z.enum(PRICE_BANDS).default("BUDGET"),
-    fulfillmentModes: z
-      .array(z.enum(["PICKUP", "LOCAL_DELIVERY", "NATIONAL_SHIPPING", "CONTACT_ONLY"]))
-      .max(4)
-      .default(["CONTACT_ONLY"]),
+    fulfillmentModes: z.array(z.enum(FULFILLMENT_MODES)).max(4).default(["CONTACT_ONLY"]),
     contact: z
       .object({
         phone: z.string().trim().max(30).optional(),
@@ -123,9 +127,7 @@ const merchantInput = z
       })
       .strict()
       .optional(),
-    verificationStatus: z
-      .enum(["UNVERIFIED", "PENDING", "VERIFIED", "REJECTED"])
-      .default("UNVERIFIED"),
+    verificationStatus: z.enum(MERCHANT_VERIFICATION_STATUSES).default("UNVERIFIED"),
     ...commonCreate,
   })
   .strict();

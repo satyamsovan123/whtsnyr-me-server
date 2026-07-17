@@ -1,3 +1,66 @@
+const USER_ROLES = Object.freeze(["VISITOR", "CURATOR", "ADMIN"]);
+const USER_STATUSES = Object.freeze(["ACTIVE", "SUSPENDED", "DISABLED"]);
+const MOBILITY_OPTIONS = Object.freeze(["STANDARD", "LOW_WALKING", "WHEELCHAIR_ACCESSIBLE"]);
+
+const CATALOG_STATUSES = Object.freeze(["DRAFT", "PUBLISHED", "ARCHIVED"]);
+const PLACE_TYPES = Object.freeze([
+  "MUSEUM",
+  "PARK",
+  "HERITAGE",
+  "LANDMARK",
+  "MARKET",
+  "VIEWPOINT",
+  "WORKSHOP",
+  "RELIGIOUS_SITE",
+  "ENTERTAINMENT",
+  "FACILITY",
+  "LOCAL_SHOPPING",
+  "OTHER",
+]);
+const PRICE_BANDS = Object.freeze(["FREE", "BUDGET", "MODERATE", "PREMIUM"]);
+const CURRENCY_CODES = Object.freeze(["INR"]);
+const SOURCE_TYPES = Object.freeze(["OFFICIAL", "CURATOR", "MERCHANT", "OPEN_DATA", "OTHER"]);
+const FULFILLMENT_MODES = Object.freeze([
+  "PICKUP",
+  "LOCAL_DELIVERY",
+  "NATIONAL_SHIPPING",
+  "CONTACT_ONLY",
+]);
+const MERCHANT_VERIFICATION_STATUSES = Object.freeze([
+  "UNVERIFIED",
+  "PENDING",
+  "VERIFIED",
+  "REJECTED",
+]);
+const GEO_POINT_TYPES = Object.freeze(["Point"]);
+
+const REPORT_REASONS = Object.freeze([
+  "INCORRECT_INFO",
+  "CLOSED",
+  "SAFETY",
+  "DUPLICATE",
+  "INAPPROPRIATE",
+  "OTHER",
+]);
+const REPORT_STATUSES = Object.freeze(["OPEN", "IN_REVIEW", "RESOLVED", "REJECTED"]);
+const REPORT_TARGET_TYPES = Object.freeze(["areas", "places", "events", "merchants"]);
+const ITINERARY_STATUSES = Object.freeze(["DRAFT", "SAVED", "ARCHIVED"]);
+const ITINERARY_DURATION_HOURS = Object.freeze([2, 4, 8]);
+const COMMERCE_STATES = Object.freeze([
+  "DRAFT",
+  "PREVIEWED",
+  "SUBMITTING",
+  "SUBMITTED",
+  "RECONCILED",
+  "RECONCILIATION_REQUIRED",
+  "FAILED",
+  "EXPIRED",
+  "CANCELLED",
+]);
+const PROVIDERS = Object.freeze(["SWIGGY"]);
+const PROVIDER_CONNECTION_STATUSES = Object.freeze(["CONNECTED", "EXPIRED", "REVOKED", "ERROR"]);
+const COMMERCE_OPERATIONS = Object.freeze(["DINEOUT_BOOKING"]);
+
 export {
   USER_ROLES,
   USER_STATUSES,
@@ -5,14 +68,18 @@ export {
   CATALOG_STATUSES,
   PLACE_TYPES,
   PRICE_BANDS,
+  CURRENCY_CODES,
   SOURCE_TYPES,
   FULFILLMENT_MODES,
   MERCHANT_VERIFICATION_STATUSES,
+  GEO_POINT_TYPES,
   REPORT_REASONS,
   REPORT_STATUSES,
+  REPORT_TARGET_TYPES,
   ITINERARY_STATUSES,
+  ITINERARY_DURATION_HOURS,
   COMMERCE_STATES,
   PROVIDERS,
   PROVIDER_CONNECTION_STATUSES,
   COMMERCE_OPERATIONS,
-} from "./index.js";
+};

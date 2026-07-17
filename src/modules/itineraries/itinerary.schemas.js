@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+import {
+  ITINERARY_DURATION_HOURS,
+  ITINERARY_STATUSES,
+  MOBILITY_OPTIONS,
+} from "../../common/constants/index.js";
 import { objectIdSchema } from "../auth/auth.schemas.js";
 import { PLACE_TYPES } from "../catalog/catalog.constants.js";
 
@@ -13,13 +18,16 @@ const coordinateInput = z
 const constraintInput = z
   .object({
     areaId: objectIdSchema,
-    durationHours: z.union([z.literal(2), z.literal(4), z.literal(8)]),
+    durationHours: z
+      .number()
+      .int()
+      .refine((value) => ITINERARY_DURATION_HOURS.includes(value), "Invalid durationHours"),
     startAt: z.coerce.date().optional(),
     budgetMinor: z.number().int().min(0).max(10_000_000).optional(),
     groupSize: z.number().int().min(1).max(30).default(1),
     interests: z.array(z.string().trim().min(1).max(40)).max(20).default([]),
     placeTypes: z.array(z.enum(PLACE_TYPES)).max(10).default([]),
-    mobility: z.enum(["STANDARD", "LOW_WALKING", "WHEELCHAIR_ACCESSIBLE"]).default("STANDARD"),
+    mobility: z.enum(MOBILITY_OPTIONS).default("STANDARD"),
     indoorPreference: z.boolean().optional(),
     startLocation: coordinateInput.optional(),
   })
@@ -39,7 +47,7 @@ const itineraryListSchema = z.object({
     .object({
       cursor: objectIdSchema.optional(),
       limit: z.coerce.number().int().min(1).max(100).default(25),
-      status: z.enum(["DRAFT", "SAVED", "ARCHIVED"]).optional(),
+      status: z.enum(ITINERARY_STATUSES).optional(),
     })
     .strict(),
   headers: z.object({}).passthrough(),

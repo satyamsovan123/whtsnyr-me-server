@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { MOBILITY_OPTIONS } from "../../common/constants/index.js";
 import { USER_ROLES, USER_STATUSES } from "./user.model.js";
 
 const objectIdSchema = z.string().regex(/^[a-f\d]{24}$/i, "Invalid MongoDB object id");
@@ -41,7 +42,7 @@ const updateMeSchema = z.object({
         .object({
           dietary: z.array(z.string().trim().min(1).max(40)).max(12).optional(),
           interests: z.array(z.string().trim().min(1).max(40)).max(20).optional(),
-          mobility: z.enum(["STANDARD", "LOW_WALKING", "WHEELCHAIR_ACCESSIBLE"]).optional(),
+          mobility: z.enum(MOBILITY_OPTIONS).optional(),
         })
         .strict()
         .optional(),

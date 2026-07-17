@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import { PRICE_BANDS } from "./catalog.constants.js";
+import { CURRENCY_CODES, PRICE_BANDS } from "./catalog.constants.js";
 import {
   catalogSchemaOptions,
   commonCatalogFields,
@@ -21,7 +21,7 @@ const eventSchema = new mongoose.Schema(
     tags: [{ type: String, trim: true, lowercase: true, maxlength: 40 }],
     priceBand: { type: String, enum: PRICE_BANDS, default: "FREE" },
     priceMinor: { type: Number, min: 0, default: 0 },
-    currency: { type: String, enum: ["INR"], default: "INR" },
+    currency: { type: String, enum: CURRENCY_CODES, default: "INR" },
     bookingUrl: { type: String, maxlength: 1000 },
     seriesKey: { type: String, maxlength: 160 },
     ...commonCatalogFields,

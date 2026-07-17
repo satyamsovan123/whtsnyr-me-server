@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import { PLACE_TYPES, PRICE_BANDS } from "./catalog.constants.js";
+import { CURRENCY_CODES, PLACE_TYPES, PRICE_BANDS } from "./catalog.constants.js";
 import {
   catalogSchemaOptions,
   commonCatalogFields,
@@ -24,7 +24,7 @@ const placeSchema = new mongoose.Schema(
     visitDurationMinutes: { type: Number, min: 15, max: 720, default: 60 },
     priceBand: { type: String, enum: PRICE_BANDS, default: "FREE" },
     entryFeeMinor: { type: Number, min: 0, default: 0 },
-    currency: { type: String, enum: ["INR"], default: "INR" },
+    currency: { type: String, enum: CURRENCY_CODES, default: "INR" },
     tags: [{ type: String, trim: true, lowercase: true, maxlength: 40 }],
     accessibility: {
       wheelchairAccessible: { type: Boolean },

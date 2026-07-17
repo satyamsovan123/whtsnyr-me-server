@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 
-import { CATALOG_STATUSES } from "./catalog.constants.js";
+import { GEO_POINT_TYPES } from "../../common/constants/index.js";
+import { CATALOG_STATUSES, SOURCE_TYPES } from "./catalog.constants.js";
 
 const geoPointDefinition = {
   type: {
     type: String,
-    enum: ["Point"],
+    enum: GEO_POINT_TYPES,
     required: true,
     default: "Point",
   },
@@ -35,7 +36,7 @@ const sourceRefSchema = new mongoose.Schema(
     label: { type: String, maxlength: 120 },
     sourceType: {
       type: String,
-      enum: ["OFFICIAL", "CURATOR", "MERCHANT", "OPEN_DATA", "OTHER"],
+      enum: SOURCE_TYPES,
       required: true,
     },
   },
