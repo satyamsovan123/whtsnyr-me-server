@@ -10,12 +10,11 @@ import { adminUserRouter, authRouter, meRouter } from "./modules/auth/auth.route
 import { adminCatalogRouter, catalogRouter } from "./modules/catalog/catalog.routes.js";
 import { commerceActionRouter } from "./modules/commerce/commerce.routes.js";
 import { itineraryRouter } from "./modules/itineraries/itinerary.routes.js";
-import {
-  oauthRouter,
-  providerConnectionRouter,
-  swiggyCommerceRouter,
-} from "./modules/providers/swiggy.routes.js";
+import { oauthRouter, providerConnectionRouter, swiggyCommerceRouter } from "./modules/providers/swiggy.routes.js";
 import { adminReportRouter, reportRouter } from "./modules/reports/report.routes.js";
+import { adminSpecialtyRouter, specialtyRouter } from "./modules/specialties/specialty.routes.js";
+import { weatherRouter } from "./modules/weather/weather.routes.js";
+import { adminAlertRouter, alertRouter } from "./modules/alerts/alerts.routes.js";
 
 const API_PREFIX = "/api/v1";
 
@@ -55,7 +54,9 @@ function createApp() {
   app.use(`${API_PREFIX}/me`, meRouter);
   app.use(`${API_PREFIX}/admin/users`, adminUserRouter);
   app.use(`${API_PREFIX}/catalog`, catalogRouter);
+  app.use(`${API_PREFIX}/admin/catalog/specialties`, adminSpecialtyRouter);
   app.use(`${API_PREFIX}/admin/catalog`, adminCatalogRouter);
+  app.use(`${API_PREFIX}/specialties`, specialtyRouter);
   app.use(`${API_PREFIX}/itineraries`, itineraryRouter);
   app.use(`${API_PREFIX}/commerce/actions`, commerceActionRouter);
   app.use(`${API_PREFIX}/providers`, providerConnectionRouter);
@@ -63,6 +64,9 @@ function createApp() {
   app.use(`${API_PREFIX}/swiggy`, swiggyCommerceRouter);
   app.use(`${API_PREFIX}/reports`, reportRouter);
   app.use(`${API_PREFIX}/admin/reports`, adminReportRouter);
+  app.use(`${API_PREFIX}/weather`, weatherRouter);
+  app.use(`${API_PREFIX}/alerts`, alertRouter);
+  app.use(`${API_PREFIX}/admin/alerts`, adminAlertRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

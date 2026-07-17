@@ -1,6 +1,6 @@
 import { sendData } from "../../common/utils/api-response.js";
 import { getConfig } from "../../config/env.js";
-import { callSwiggyReadTool } from "./swiggy-mcp.service.js";
+import { callSwiggyReadTool, callSwiggyWriteTool } from "./swiggy-mcp.service.js";
 import {
   beginSwiggyAuthorization,
   completeSwiggyAuthorization,
@@ -150,6 +150,145 @@ async function getDineoutSlots(request, response) {
   );
 }
 
+// FOOD CART
+async function updateFoodCart(request, response) {
+  const { addressId, items } = request.validated.body;
+  return sendData(
+    response,
+    await callSwiggyWriteTool(request.auth.userId, "food", "update_food_cart", { addressId, items })
+  );
+}
+
+async function getFoodCart(request, response) {
+  const { addressId } = request.validated.query;
+  return sendData(
+    response,
+    await callSwiggyReadTool(request.auth.userId, "food", "get_food_cart", { addressId })
+  );
+}
+
+async function flushFoodCart(request, response) {
+  const { addressId } = request.validated.query;
+  return sendData(
+    response,
+    await callSwiggyWriteTool(request.auth.userId, "food", "flush_food_cart", { addressId })
+  );
+}
+
+// FOOD COUPONS
+async function fetchFoodCoupons(request, response) {
+  const { addressId } = request.validated.query;
+  return sendData(
+    response,
+    await callSwiggyReadTool(request.auth.userId, "food", "fetch_food_coupons", { addressId })
+  );
+}
+
+async function applyFoodCoupon(request, response) {
+  const { addressId, couponCode } = request.validated.body;
+  return sendData(
+    response,
+    await callSwiggyWriteTool(request.auth.userId, "food", "apply_food_coupon", { addressId, couponCode })
+  );
+}
+
+// FOOD ORDERS
+async function placeFoodOrder(request, response) {
+  const { addressId } = request.validated.body;
+  return sendData(
+    response,
+    await callSwiggyWriteTool(request.auth.userId, "food", "place_food_order", { addressId })
+  );
+}
+
+async function listFoodOrders(request, response) {
+  return sendData(
+    response,
+    await callSwiggyReadTool(request.auth.userId, "food", "get_food_orders", {})
+  );
+}
+
+async function getFoodOrderDetails(request, response) {
+  const { orderId } = request.validated.params;
+  return sendData(
+    response,
+    await callSwiggyReadTool(request.auth.userId, "food", "get_food_order_details", { orderId })
+  );
+}
+
+async function trackFoodOrder(request, response) {
+  const { orderId } = request.validated.params;
+  return sendData(
+    response,
+    await callSwiggyReadTool(request.auth.userId, "food", "track_food_order", { orderId })
+  );
+}
+
+// INSTAMART CART
+async function updateInstamartCart(request, response) {
+  const { addressId, items } = request.validated.body;
+  return sendData(
+    response,
+    await callSwiggyWriteTool(request.auth.userId, "instamart", "update_cart", { addressId, items })
+  );
+}
+
+async function getInstamartCart(request, response) {
+  return sendData(
+    response,
+    await callSwiggyReadTool(request.auth.userId, "instamart", "get_cart", {})
+  );
+}
+
+async function clearInstamartCart(request, response) {
+  return sendData(
+    response,
+    await callSwiggyWriteTool(request.auth.userId, "instamart", "clear_cart", {})
+  );
+}
+
+// INSTAMART ORDERS
+async function instamartCheckout(request, response) {
+  const { addressId } = request.validated.body;
+  return sendData(
+    response,
+    await callSwiggyWriteTool(request.auth.userId, "instamart", "checkout", { addressId })
+  );
+}
+
+async function listInstamartOrders(request, response) {
+  return sendData(
+    response,
+    await callSwiggyReadTool(request.auth.userId, "instamart", "get_orders", {})
+  );
+}
+
+async function getInstamartOrderDetails(request, response) {
+  const { orderId } = request.validated.params;
+  return sendData(
+    response,
+    await callSwiggyReadTool(request.auth.userId, "instamart", "get_order_details", { orderId })
+  );
+}
+
+async function trackInstamartOrder(request, response) {
+  const { orderId } = request.validated.params;
+  const { lat, lng } = request.validated.query;
+  return sendData(
+    response,
+    await callSwiggyReadTool(request.auth.userId, "instamart", "track_order", { orderId, lat, lng })
+  );
+}
+
+// INSTAMART GO-TO ITEMS
+async function getGoToItems(request, response) {
+  const { addressId } = request.validated.query;
+  return sendData(
+    response,
+    await callSwiggyReadTool(request.auth.userId, "instamart", "your_go_to_items", { addressId })
+  );
+}
+
 export {
   listProviderConnections,
   getSwiggyStatus,
@@ -164,4 +303,21 @@ export {
   searchDineoutRestaurants,
   getDineoutRestaurant,
   getDineoutSlots,
+  updateFoodCart,
+  getFoodCart,
+  flushFoodCart,
+  fetchFoodCoupons,
+  applyFoodCoupon,
+  placeFoodOrder,
+  listFoodOrders,
+  getFoodOrderDetails,
+  trackFoodOrder,
+  updateInstamartCart,
+  getInstamartCart,
+  clearInstamartCart,
+  instamartCheckout,
+  listInstamartOrders,
+  getInstamartOrderDetails,
+  trackInstamartOrder,
+  getGoToItems,
 };

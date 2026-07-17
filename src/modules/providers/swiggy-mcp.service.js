@@ -37,6 +37,24 @@ const READ_TOOL_ALLOWLIST = Object.freeze({
   ]),
 });
 
+const WRITE_TOOL_ALLOWLIST = Object.freeze({
+  food: new Set([
+    "update_food_cart",
+    "flush_food_cart",
+    "apply_food_coupon",
+    "place_food_order",
+  ]),
+  instamart: new Set([
+    "update_cart",
+    "clear_cart",
+    "checkout",
+  ]),
+  dineout: new Set([
+    "book_table",
+    "create_cart",
+  ]),
+});
+
 function parseToolResult(result) {
   if (result.structuredContent !== undefined) return result.structuredContent;
   const items = Array.isArray(result.content) ? result.content : [];
@@ -168,9 +186,44 @@ async function callSwiggyDineoutBooking(userId, args) {
   return data;
 }
 
+async function callSwiggyWriteTool(userId, server, tool, args) {
+  const config = getConfig();
+  if (!config.swiggy.writesEnabled) {
+    throw new AppError({
+      status: 503,
+      code: "SWIGGY_WRITES_DISABLED",
+      message: "Swiggy writes are disabled in this environment",
+    });
+  }
+  if (!WRITE_TOOL_ALLOWLIST[server]?.has(tool)) {
+    throw new AppError({
+      status: 500,
+      code: "SWIGGY_TOOL_NOT_ALLOWLISTED",
+      message: "The backend attempted a non-allowlisted Swiggy write tool",
+    });
+  }
+  const { connection, accessToken } = await getSwiggyAccessToken(userId);
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const data = await executeTool({ server, tool, args, accessToken, write: true });
+      await connection.updateOne({ $set: { lastUsedAt: new Date() } });
+      return data;
+    } catch (error) {
+      lastError = error;
+      if (error instanceof SwiggyToolRejectedError || error instanceof SwiggyWriteAmbiguousError || attempt === 1) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 150 + Math.random() * 100));
+    }
+  }
+  throw lastError;
+}
+
 export {
   SwiggyWriteAmbiguousError,
   SwiggyToolRejectedError,
+  READ_TOOL_ALLOWLIST,
+  WRITE_TOOL_ALLOWLIST,
   callSwiggyReadTool,
   callSwiggyDineoutBooking,
+  callSwiggyWriteTool,
 };

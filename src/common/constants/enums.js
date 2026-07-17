@@ -15,6 +15,10 @@ const PLACE_TYPES = Object.freeze([
   "ENTERTAINMENT",
   "FACILITY",
   "LOCAL_SHOPPING",
+  "PHOTO_SPOT",
+  "FOOD_STREET",
+  "NATURE",
+  "UNIVERSITY",
   "OTHER",
 ]);
 const PRICE_BANDS = Object.freeze(["FREE", "BUDGET", "MODERATE", "PREMIUM"]);
@@ -33,6 +37,22 @@ const MERCHANT_VERIFICATION_STATUSES = Object.freeze([
   "REJECTED",
 ]);
 const GEO_POINT_TYPES = Object.freeze(["Point"]);
+const SPECIALTY_CATEGORIES = Object.freeze([
+  "DISH",
+  "CRAFT",
+  "EXPERIENCE",
+  "PHRASE",
+  "CUSTOM",
+]);
+const ALERT_TYPES = Object.freeze([
+  "WEATHER",
+  "NEWS",
+  "SAFETY",
+  "TRAVEL_ADVISORY",
+  "EVENT",
+  "CUSTOM",
+]);
+const ALERT_SEVERITIES = Object.freeze(["INFO", "WARNING", "CRITICAL"]);
 
 const REPORT_REASONS = Object.freeze([
   "INCORRECT_INFO",
@@ -43,7 +63,7 @@ const REPORT_REASONS = Object.freeze([
   "OTHER",
 ]);
 const REPORT_STATUSES = Object.freeze(["OPEN", "IN_REVIEW", "RESOLVED", "REJECTED"]);
-const REPORT_TARGET_TYPES = Object.freeze(["areas", "places", "events", "merchants"]);
+const REPORT_TARGET_TYPES = Object.freeze(["areas", "places", "events", "merchants", "specialties"]);
 const ITINERARY_STATUSES = Object.freeze(["DRAFT", "SAVED", "ARCHIVED"]);
 const ITINERARY_DURATION_HOURS = Object.freeze([2, 4, 8]);
 const COMMERCE_STATES = Object.freeze([
@@ -59,7 +79,7 @@ const COMMERCE_STATES = Object.freeze([
 ]);
 const PROVIDERS = Object.freeze(["SWIGGY"]);
 const PROVIDER_CONNECTION_STATUSES = Object.freeze(["CONNECTED", "EXPIRED", "REVOKED", "ERROR"]);
-const COMMERCE_OPERATIONS = Object.freeze(["DINEOUT_BOOKING"]);
+const COMMERCE_OPERATIONS = Object.freeze(["DINEOUT_BOOKING", "FOOD_ORDER", "INSTAMART_ORDER"]);
 
 export {
   USER_ROLES,
@@ -73,6 +93,9 @@ export {
   FULFILLMENT_MODES,
   MERCHANT_VERIFICATION_STATUSES,
   GEO_POINT_TYPES,
+  SPECIALTY_CATEGORIES,
+  ALERT_TYPES,
+  ALERT_SEVERITIES,
   REPORT_REASONS,
   REPORT_STATUSES,
   REPORT_TARGET_TYPES,

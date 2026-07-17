@@ -29,6 +29,8 @@ const rawSchema = z
     GEOCODING_ENABLED: booleanFromString.default(true),
     GEOCODER_BASE_URL: z.string().url().default("https://nominatim.openstreetmap.org"),
     GEOCODER_USER_AGENT: z.string().min(5).default("whtsnyr-me/1.0 (local-development)"),
+    WEATHER_CACHE_TTL_MS: z.coerce.number().int().min(0).default(1_800_000),
+    ALERTS_RSS_CACHE_TTL_MS: z.coerce.number().int().min(0).default(900_000),
   })
   .passthrough();
 
@@ -96,6 +98,9 @@ function loadConfig(source = process.env) {
   const raw = parsed.data;
   const isProduction = raw.NODE_ENV === "production";
   const accessSecret = raw.JWT_ACCESS_SECRET || developmentSecret("access-token");
+  const encryptionKey =
+    raw.TOKEN_ENCRYPTION_KEY ||
+    (isProduction ? undefined : createHash("sha256").update("whtsnyr-local-only:encryption").digest("base64"));
   const apiBaseUrl = raw.API_BASE_URL.replace(/\/$/, "");
 
   if (isProduction && (!raw.JWT_ACCESS_SECRET || raw.JWT_ACCESS_SECRET.length < 32)) {
@@ -120,7 +125,7 @@ function loadConfig(source = process.env) {
       accessTokenTtl: raw.ACCESS_TOKEN_TTL,
     },
     encryption: {
-      key: raw.TOKEN_ENCRYPTION_KEY,
+      key: encryptionKey,
       keyVersion: raw.TOKEN_ENCRYPTION_KEY_VERSION,
     },
     swiggy: {
@@ -136,6 +141,12 @@ function loadConfig(source = process.env) {
       enabled: raw.GEOCODING_ENABLED,
       baseUrl: raw.GEOCODER_BASE_URL.replace(/\/$/, ""),
       userAgent: raw.GEOCODER_USER_AGENT,
+    },
+    weather: {
+      cacheTtlMs: raw.WEATHER_CACHE_TTL_MS,
+    },
+    alerts: {
+      rssCacheTtlMs: raw.ALERTS_RSS_CACHE_TTL_MS,
     },
   });
 }

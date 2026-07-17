@@ -141,6 +141,134 @@ const dineoutSlotsSchema = z.object({
   headers: passthroughHeaders,
 });
 
+// NEW FOOD CART/ORDER SCHEMAS
+
+const updateFoodCartSchema = z.object({
+  body: z.object({
+    addressId: z.string().trim().min(1).max(200),
+    items: z.array(z.record(z.string(), z.unknown())).min(1).max(100),
+  }).passthrough(),
+  params: z.object({}),
+  query: z.object({}),
+  headers: passthroughHeaders,
+});
+
+const getFoodCartSchema = z.object({
+  body: z.object({}).passthrough(),
+  params: z.object({}),
+  query: z.object({ addressId: z.string().trim().min(1).max(200) }).strict(),
+  headers: passthroughHeaders,
+});
+
+const flushFoodCartSchema = z.object({
+  body: z.object({}).passthrough(),
+  params: z.object({}),
+  query: z.object({ addressId: z.string().trim().min(1).max(200) }).strict(),
+  headers: passthroughHeaders,
+});
+
+const fetchFoodCouponsSchema = z.object({
+  body: z.object({}).passthrough(),
+  params: z.object({}),
+  query: z.object({ addressId: z.string().trim().min(1).max(200) }).strict(),
+  headers: passthroughHeaders,
+});
+
+const applyFoodCouponSchema = z.object({
+  body: z.object({
+    addressId: z.string().trim().min(1).max(200),
+    couponCode: z.string().trim().min(1).max(50),
+  }).strict(),
+  params: z.object({}),
+  query: z.object({}),
+  headers: passthroughHeaders,
+});
+
+const placeFoodOrderSchema = z.object({
+  body: z.object({ addressId: z.string().trim().min(1).max(200) }).strict(),
+  params: z.object({}),
+  query: z.object({}),
+  headers: passthroughHeaders,
+});
+
+const foodOrderDetailsSchema = z.object({
+  body: z.object({}).passthrough(),
+  params: z.object({ orderId: z.string().trim().min(1).max(200) }),
+  query: z.object({}),
+  headers: passthroughHeaders,
+});
+
+const trackFoodOrderSchema = z.object({
+  body: z.object({}).passthrough(),
+  params: z.object({ orderId: z.string().trim().min(1).max(200) }),
+  query: z.object({}),
+  headers: passthroughHeaders,
+});
+
+// NEW INSTAMART CART/ORDER SCHEMAS
+
+const updateInstamartCartSchema = z.object({
+  body: z.object({
+    addressId: z.string().trim().min(1).max(200),
+    items: z.array(z.record(z.string(), z.unknown())).min(1).max(100),
+  }).passthrough(),
+  params: z.object({}),
+  query: z.object({}),
+  headers: passthroughHeaders,
+});
+
+const getInstamartCartSchema = z.object({
+  body: z.object({}).passthrough(),
+  params: z.object({}),
+  query: z.object({}),
+  headers: passthroughHeaders,
+});
+
+const clearInstamartCartSchema = z.object({
+  body: z.object({}).passthrough(),
+  params: z.object({}),
+  query: z.object({}),
+  headers: passthroughHeaders,
+});
+
+const instamartCheckoutSchema = z.object({
+  body: z.object({ addressId: z.string().trim().min(1).max(200) }).strict(),
+  params: z.object({}),
+  query: z.object({}),
+  headers: passthroughHeaders,
+});
+
+const listInstamartOrdersSchema = z.object({
+  body: z.object({}).passthrough(),
+  params: z.object({}),
+  query: z.object({}),
+  headers: passthroughHeaders,
+});
+
+const instamartOrderDetailsSchema = z.object({
+  body: z.object({}).passthrough(),
+  params: z.object({ orderId: z.string().trim().min(1).max(200) }),
+  query: z.object({}),
+  headers: passthroughHeaders,
+});
+
+const trackInstamartOrderSchema = z.object({
+  body: z.object({}).passthrough(),
+  params: z.object({ orderId: z.string().trim().min(1).max(200) }),
+  query: z.object({
+    lat: z.coerce.number().min(-90).max(90).optional(),
+    lng: z.coerce.number().min(-180).max(180).optional(),
+  }).strict(),
+  headers: passthroughHeaders,
+});
+
+const goToItemsSchema = z.object({
+  body: z.object({}).passthrough(),
+  params: z.object({}),
+  query: z.object({ addressId: z.string().trim().min(1).max(200) }).strict(),
+  headers: passthroughHeaders,
+});
+
 export {
   emptyProviderRequestSchema,
   oauthCallbackSchema,
@@ -152,4 +280,20 @@ export {
   dineoutSearchSchema,
   dineoutDetailsSchema,
   dineoutSlotsSchema,
+  updateFoodCartSchema,
+  getFoodCartSchema,
+  flushFoodCartSchema,
+  fetchFoodCouponsSchema,
+  applyFoodCouponSchema,
+  placeFoodOrderSchema,
+  foodOrderDetailsSchema,
+  trackFoodOrderSchema,
+  updateInstamartCartSchema,
+  getInstamartCartSchema,
+  clearInstamartCartSchema,
+  instamartCheckoutSchema,
+  listInstamartOrdersSchema,
+  instamartOrderDetailsSchema,
+  trackInstamartOrderSchema,
+  goToItemsSchema,
 };

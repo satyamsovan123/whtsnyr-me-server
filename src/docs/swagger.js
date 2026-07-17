@@ -32,6 +32,11 @@ function buildOpenApiSpec(apiPrefix) {
         { name: "Swiggy Commerce" },
         { name: "Reports" },
         { name: "Admin Reports" },
+        { name: "Specialties" },
+        { name: "Admin Specialties" },
+        { name: "Weather" },
+        { name: "Alerts" },
+        { name: "Admin Alerts" },
       ],
       components: {
         securitySchemes: {
@@ -653,6 +658,27 @@ function buildOpenApiSpec(apiPrefix) {
               403: { $ref: "#/components/responses/Problem" },
               409: { $ref: "#/components/responses/Problem" },
             },
+          },
+        },
+        [`${apiPrefix}/specialties`]: {
+          get: {
+            tags: ["Specialties"],
+            summary: "List published specialties",
+            responses: { 200: { $ref: "#/components/responses/Success" } },
+          },
+        },
+        [`${apiPrefix}/weather`]: {
+          get: {
+            tags: ["Weather"],
+            summary: "Get current weather for coordinates",
+            responses: { 200: { $ref: "#/components/responses/Success" } },
+          },
+        },
+        [`${apiPrefix}/alerts`]: {
+          get: {
+            tags: ["Alerts"],
+            summary: "Get active alerts",
+            responses: { 200: { $ref: "#/components/responses/Success" } },
           },
         },
       },

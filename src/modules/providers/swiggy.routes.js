@@ -18,6 +18,23 @@ import {
   searchFoodRestaurants,
   searchInstamartProducts,
   swiggyOAuthCallback,
+  updateFoodCart,
+  getFoodCart,
+  flushFoodCart,
+  fetchFoodCoupons,
+  applyFoodCoupon,
+  placeFoodOrder,
+  listFoodOrders,
+  getFoodOrderDetails,
+  trackFoodOrder,
+  updateInstamartCart,
+  getInstamartCart,
+  clearInstamartCart,
+  instamartCheckout,
+  listInstamartOrders,
+  getInstamartOrderDetails,
+  trackInstamartOrder,
+  getGoToItems,
 } from "./swiggy.controller.js";
 import {
   addressListSchema,
@@ -30,6 +47,22 @@ import {
   foodRestaurantSearchSchema,
   instamartProductSearchSchema,
   oauthCallbackSchema,
+  updateFoodCartSchema,
+  getFoodCartSchema,
+  flushFoodCartSchema,
+  fetchFoodCouponsSchema,
+  applyFoodCouponSchema,
+  placeFoodOrderSchema,
+  foodOrderDetailsSchema,
+  trackFoodOrderSchema,
+  updateInstamartCartSchema,
+  getInstamartCartSchema,
+  clearInstamartCartSchema,
+  instamartCheckoutSchema,
+  listInstamartOrdersSchema,
+  instamartOrderDetailsSchema,
+  trackInstamartOrderSchema,
+  goToItemsSchema,
 } from "./swiggy.schemas.js";
 
 const providerConnectionRouter = Router();
@@ -90,5 +123,30 @@ swiggyCommerceRouter.get(
   validate(dineoutSlotsSchema),
   asyncHandler(getDineoutSlots),
 );
+
+// Food Cart & Coupons
+swiggyCommerceRouter.post("/food/cart", validate(updateFoodCartSchema), asyncHandler(updateFoodCart));
+swiggyCommerceRouter.get("/food/cart", validate(getFoodCartSchema), asyncHandler(getFoodCart));
+swiggyCommerceRouter.delete("/food/cart", validate(flushFoodCartSchema), asyncHandler(flushFoodCart));
+swiggyCommerceRouter.get("/food/coupons", validate(fetchFoodCouponsSchema), asyncHandler(fetchFoodCoupons));
+swiggyCommerceRouter.post("/food/coupons/apply", validate(applyFoodCouponSchema), asyncHandler(applyFoodCoupon));
+
+// Food Orders
+swiggyCommerceRouter.post("/food/order", validate(placeFoodOrderSchema), asyncHandler(placeFoodOrder));
+swiggyCommerceRouter.get("/food/orders", asyncHandler(listFoodOrders));
+swiggyCommerceRouter.get("/food/orders/:orderId", validate(foodOrderDetailsSchema), asyncHandler(getFoodOrderDetails));
+swiggyCommerceRouter.get("/food/orders/:orderId/track", validate(trackFoodOrderSchema), asyncHandler(trackFoodOrder));
+
+// Instamart Cart
+swiggyCommerceRouter.post("/instamart/cart", validate(updateInstamartCartSchema), asyncHandler(updateInstamartCart));
+swiggyCommerceRouter.get("/instamart/cart", validate(getInstamartCartSchema), asyncHandler(getInstamartCart));
+swiggyCommerceRouter.delete("/instamart/cart", validate(clearInstamartCartSchema), asyncHandler(clearInstamartCart));
+swiggyCommerceRouter.get("/instamart/go-to-items", validate(goToItemsSchema), asyncHandler(getGoToItems));
+
+// Instamart Orders
+swiggyCommerceRouter.post("/instamart/checkout", validate(instamartCheckoutSchema), asyncHandler(instamartCheckout));
+swiggyCommerceRouter.get("/instamart/orders", validate(listInstamartOrdersSchema), asyncHandler(listInstamartOrders));
+swiggyCommerceRouter.get("/instamart/orders/:orderId", validate(instamartOrderDetailsSchema), asyncHandler(getInstamartOrderDetails));
+swiggyCommerceRouter.get("/instamart/orders/:orderId/track", validate(trackInstamartOrderSchema), asyncHandler(trackInstamartOrder));
 
 export { providerConnectionRouter, oauthRouter, swiggyCommerceRouter };

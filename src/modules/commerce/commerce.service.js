@@ -4,6 +4,7 @@ import { hashObject } from "../../common/utils/canonical-json.js";
 import { getConfig } from "../../config/env.js";
 import {
   callSwiggyDineoutBooking,
+  callSwiggyWriteTool,
   callSwiggyReadTool,
   SwiggyToolRejectedError,
   SwiggyWriteAmbiguousError,
@@ -140,10 +141,10 @@ async function confirmCommerceAction(userId, id, input, idempotencyKey) {
     });
   }
 
-  const idempotencyKeyHash = hashSecret(`${userId}|DINEOUT_BOOKING|${idempotencyKey}`);
+  const idempotencyKeyHash = hashSecret(`${userId}|${input.operation || "DINEOUT_BOOKING"}|${idempotencyKey}`);
   const prior = await CommerceAction.findOne({
     userId,
-    operation: "DINEOUT_BOOKING",
+    operation: { $in: ["DINEOUT_BOOKING", "FOOD_ORDER", "INSTAMART_ORDER"] },
     "confirmation.idempotencyKeyHash": idempotencyKeyHash,
   });
   if (prior) {
@@ -157,7 +158,7 @@ async function confirmCommerceAction(userId, id, input, idempotencyKey) {
     {
       _id: id,
       userId,
-      operation: "DINEOUT_BOOKING",
+      operation: { $in: ["DINEOUT_BOOKING", "FOOD_ORDER", "INSTAMART_ORDER"] },
       state: "PREVIEWED",
       version: input.expectedVersion,
       "preview.hash": input.previewHash,
@@ -191,7 +192,15 @@ async function confirmCommerceAction(userId, id, input, idempotencyKey) {
   };
 
   try {
-    const providerResponse = await callSwiggyDineoutBooking(userId, args);
+    let providerResponse;
+    if (claimed.operation === "FOOD_ORDER") {
+      providerResponse = await callSwiggyWriteTool(userId, "food", "place_food_order", claimed.intent);
+    } else if (claimed.operation === "INSTAMART_ORDER") {
+      providerResponse = await callSwiggyWriteTool(userId, "instamart", "checkout", claimed.intent);
+    } else {
+      providerResponse = await callSwiggyDineoutBooking(userId, args);
+    }
+
     return await finalizeAction(claimed._id, "SUBMITTED", {
       "submission.completedAt": new Date(),
       "submission.response": providerResponse,
