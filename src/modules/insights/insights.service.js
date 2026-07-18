@@ -39,7 +39,7 @@ export async function generateInsights(context) {
     Food Options: ${JSON.stringify(context.swiggyData || [])}`;
 
     const response = await aiClient.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: getConfig().GEMINI_MODEL,
       contents: prompt,
       config: {
         temperature: 0.7,

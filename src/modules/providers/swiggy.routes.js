@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { getNearbyRestaurants } from "./swiggy-public.service.js";
 
 import { authenticate } from "../../common/middleware/auth.js";
 import { providerRateLimit } from "../../common/middleware/rate-limit.js";
@@ -85,6 +86,18 @@ oauthRouter.get(
   asyncHandler(swiggyOAuthCallback),
 );
 
+const swiggyPublicRouter = Router();
+swiggyPublicRouter.get(
+  "/food/nearby/restaurants",
+  providerRateLimit,
+  asyncHandler(async (req, res) => {
+    const { lat, lng } = req.query;
+    if (!lat || !lng) return res.status(400).json({ error: "lat and lng required" });
+    const data = await getNearbyRestaurants(lat, lng);
+    res.json(data);
+  })
+);
+
 const swiggyCommerceRouter = Router();
 swiggyCommerceRouter.use(authenticate, providerRateLimit);
 swiggyCommerceRouter.get("/addresses", validate(addressListSchema), asyncHandler(listAddresses));
@@ -149,4 +162,4 @@ swiggyCommerceRouter.get("/instamart/orders", validate(listInstamartOrdersSchema
 swiggyCommerceRouter.get("/instamart/orders/:orderId", validate(instamartOrderDetailsSchema), asyncHandler(getInstamartOrderDetails));
 swiggyCommerceRouter.get("/instamart/orders/:orderId/track", validate(trackInstamartOrderSchema), asyncHandler(trackInstamartOrder));
 
-export { providerConnectionRouter, oauthRouter, swiggyCommerceRouter };
+export { providerConnectionRouter, oauthRouter, swiggyCommerceRouter, swiggyPublicRouter };

@@ -54,7 +54,7 @@ async function findNearbyPlaces(latitude, longitude, type = "tourist_attraction"
       },
       openNow: place.opening_hours?.open_now,
       icon: place.icon,
-      photoReference: place.photos?.[0]?.photo_reference,
+      photoUrl: place.photos?.[0]?.photo_reference ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${place.photos[0].photo_reference}&key=${googleMaps.apiKey}` : null,
     }));
 
     return {

@@ -6,6 +6,20 @@ async function authenticate(request, _response, next) {
   try {
     const authorization = request.get("authorization") || "";
     const [scheme, token] = authorization.split(" ");
+    
+    // DEV MODE BYPASS
+    if (process.env.NODE_ENV === "development" && (!scheme || !token)) {
+      const devUser = await User.findOne({ status: "ACTIVE" });
+      if (devUser) {
+        request.auth = {
+          userId: String(devUser._id),
+          roles: devUser.roles,
+          user: devUser,
+        };
+        return next();
+      }
+    }
+
     if (scheme !== "Bearer" || !token) {
       throw unauthorized();
     }

@@ -4,10 +4,10 @@ import { MESSAGES } from "../constants/index.js";
 function validate(schema) {
   return (request, _response, next) => {
     const result = schema.safeParse({
-      body: request.body,
-      params: request.params,
-      query: request.query,
-      headers: request.headers,
+      body: request.body || {},
+      params: request.params || {},
+      query: request.query || {},
+      headers: request.headers || {},
     });
 
     if (!result.success) {
