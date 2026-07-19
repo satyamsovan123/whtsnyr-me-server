@@ -71,4 +71,30 @@ async function updateUserRoles(request, response) {
   return sendData(response, user);
 }
 
-export { register, login, getMe, updateMe, listUsers, updateUserStatus, updateUserRoles };
+async function getBookmarks(request, response) {
+  const user = await User.findById(request.auth.userId);
+  if (!user) throw notFound("User");
+  return sendData(response, user.bookmarks || []);
+}
+
+async function addBookmark(request, response) {
+  const user = await User.findOneAndUpdate(
+    { _id: request.auth.userId },
+    { $addToSet: { bookmarks: request.validated.body } },
+    { new: true, runValidators: true }
+  );
+  if (!user) throw notFound("User");
+  return sendData(response, user.bookmarks);
+}
+
+async function removeBookmark(request, response) {
+  const user = await User.findOneAndUpdate(
+    { _id: request.auth.userId },
+    { $pull: { bookmarks: { placeId: request.params.placeId } } },
+    { new: true, runValidators: true }
+  );
+  if (!user) throw notFound("User");
+  return sendData(response, user.bookmarks);
+}
+
+export { register, login, getMe, updateMe, listUsers, updateUserStatus, updateUserRoles, getBookmarks, addBookmark, removeBookmark };

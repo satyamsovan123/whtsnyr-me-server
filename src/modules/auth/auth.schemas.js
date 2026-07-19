@@ -43,6 +43,10 @@ const updateMeSchema = z.object({
           dietary: z.array(z.string().trim().min(1).max(40)).max(12).optional(),
           interests: z.array(z.string().trim().min(1).max(40)).max(20).optional(),
           mobility: z.enum(MOBILITY_OPTIONS).optional(),
+          radius: z.string().trim().max(20).optional(),
+          temperatureUnit: z.string().trim().max(5).optional(),
+          theme: z.string().trim().max(20).optional(),
+          language: z.string().trim().max(10).optional(),
         })
         .strict()
         .optional(),
@@ -81,6 +85,24 @@ const updateUserRolesSchema = z.object({
   headers: z.object({}).passthrough(),
 });
 
+const addBookmarkSchema = z.object({
+  body: z.object({
+    placeId: z.string().trim().min(1),
+    name: z.string().trim().min(1),
+    photoUrl: z.string().url().optional().or(z.literal('')),
+    rating: z.number().optional(),
+    types: z.array(z.string()).optional(),
+    distance: z.number().optional(),
+    location: z.object({
+      lat: z.number(),
+      lng: z.number()
+    }).optional()
+  }).strict(),
+  params: z.object({}),
+  query: z.object({}),
+  headers: z.object({}).passthrough(),
+});
+
 export {
   objectIdSchema,
   registerSchema,
@@ -89,4 +111,5 @@ export {
   userListSchema,
   updateUserStatusSchema,
   updateUserRolesSchema,
+  addBookmarkSchema,
 };

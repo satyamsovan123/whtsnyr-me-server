@@ -10,6 +10,7 @@
   "engines": {
     "node": ">=24.0.0"
   },
+  "packageManager": "npm@11.6.2",
   "keywords": [
     "whtsnyr.me",
     "whtsnyr.me server"

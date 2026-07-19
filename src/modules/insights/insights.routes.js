@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getInsights } from './insights.controller.js';
+import { getInsights, chatInsights } from './insights.controller.js';
 import { validate } from '../../common/middleware/validate.js';
 import { z } from 'zod';
 
@@ -11,10 +11,21 @@ const generateInsightsSchema = z.object({
   })
 });
 
+const chatSchema = z.object({
+  body: z.object({
+    message: z.string().trim().min(1).max(500),
+    latitude: z.coerce.number().min(-90).max(90).optional(),
+    longitude: z.coerce.number().min(-180).max(180).optional(),
+    history: z.array(z.any()).default([]),
+    language: z.string().optional()
+  })
+});
+
 const router = Router();
 
 // Endpoint doesn't require auth by default since it's an open dashboard, 
 // but we add schema validation
 router.post('/generate', validate(generateInsightsSchema), getInsights);
+router.post('/chat', validate(chatSchema), chatInsights);
 
 export { router as insightsRouter };

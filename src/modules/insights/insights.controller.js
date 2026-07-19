@@ -1,6 +1,6 @@
 import { asyncHandler } from '../../common/utils/async-handler.js';
 import { sendData } from '../../common/utils/api-response.js';
-import { generateInsights } from './insights.service.js';
+import { generateInsights, generateChatResponse } from './insights.service.js';
 
 export const getInsights = asyncHandler(async (req, res) => {
   const { weatherData, placesData, swiggyData } = req.body;
@@ -11,5 +11,11 @@ export const getInsights = asyncHandler(async (req, res) => {
     swiggyData
   });
 
+  return sendData(res, result);
+});
+
+export const chatInsights = asyncHandler(async (req, res) => {
+  const { message, latitude, longitude, history, language } = req.body;
+  const result = await generateChatResponse({ message, latitude, longitude, history, language });
   return sendData(res, result);
 });

@@ -24,7 +24,25 @@ const userSchema = new mongoose.Schema(
         enum: MOBILITY_OPTIONS,
         default: "STANDARD",
       },
+      radius: { type: String, default: "2 km" },
+      temperatureUnit: { type: String, default: "C" },
+      theme: { type: String, default: "system" },
+      language: { type: String, default: "en" },
     },
+    bookmarks: [
+      {
+        placeId: { type: String, required: true },
+        name: { type: String, required: true },
+        photoUrl: { type: String },
+        rating: { type: Number },
+        types: [{ type: String }],
+        distance: { type: Number },
+        location: {
+          lat: { type: Number },
+          lng: { type: Number }
+        }
+      }
+    ],
   },
   {
     timestamps: true,

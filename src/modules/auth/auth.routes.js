@@ -12,6 +12,9 @@ import {
   updateMe,
   updateUserRoles,
   updateUserStatus,
+  getBookmarks,
+  addBookmark,
+  removeBookmark,
 } from "./auth.controller.js";
 import {
   loginSchema,
@@ -20,6 +23,7 @@ import {
   updateUserRolesSchema,
   updateUserStatusSchema,
   userListSchema,
+  addBookmarkSchema,
 } from "./auth.schemas.js";
 
 const authRouter = Router();
@@ -30,6 +34,9 @@ const meRouter = Router();
 meRouter.use(authenticate);
 meRouter.get("/", asyncHandler(getMe));
 meRouter.patch("/", validate(updateMeSchema), asyncHandler(updateMe));
+meRouter.get("/bookmarks", asyncHandler(getBookmarks));
+meRouter.post("/bookmarks", validate(addBookmarkSchema), asyncHandler(addBookmark));
+meRouter.delete("/bookmarks/:placeId", asyncHandler(removeBookmark));
 
 const adminUserRouter = Router();
 adminUserRouter.use(authenticate, authorize("ADMIN"));

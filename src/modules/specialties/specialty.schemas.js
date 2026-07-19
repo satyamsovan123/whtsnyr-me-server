@@ -83,6 +83,8 @@ const listPublicSchema = z.object({
       cursor: objectIdSchema.optional(),
       limit: z.coerce.number().int().min(1).max(100).default(25),
       areaId: objectIdSchema.optional(),
+      latitude: z.coerce.number().min(-90).max(90).optional(),
+      longitude: z.coerce.number().min(-180).max(180).optional(),
       q: z.string().trim().min(1).max(100).optional(),
       category: z.enum(SPECIALTY_CATEGORIES).optional(),
     }),

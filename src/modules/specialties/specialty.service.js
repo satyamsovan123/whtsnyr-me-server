@@ -29,7 +29,8 @@ function toPersistence(input) {
 }
 
 function publicFilter(query) {
-  const filter = { status: "PUBLISHED", archivedAt: null, areaId: query.areaId };
+  const filter = { status: "PUBLISHED", archivedAt: null };
+  if (query.areaId) filter.areaId = query.areaId;
   if (query.cursor) filter._id = { $lt: query.cursor };
   if (query.category) filter.category = query.category;
   if (query.q) filter.$text = { $search: query.q };
