@@ -12,7 +12,7 @@ import {
 } from "./specialty.service.js";
 
 async function publicList(request, response) {
-  return sendData(response, await listPublic(request.validated.query));
+  return sendData(response, await listPublic(request.validated.query, request.auth?.userId));
 }
 
 async function publicGet(request, response) {

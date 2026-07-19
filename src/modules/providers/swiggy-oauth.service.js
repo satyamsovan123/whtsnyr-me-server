@@ -156,11 +156,13 @@ async function claimState(rawState) {
   if (!rawState) throw unauthorized("OAuth state is missing");
   const stateHash = hashSecret(rawState);
   const state = await OAuthState.findOneAndUpdate(
-    { stateHash, usedAt: null, expiresAt: { $gt: new Date() } },
+    { stateHash, usedAt: null },
     { $set: { usedAt: new Date() } },
     { new: true },
   ).select("+verifierEnvelope");
-  if (!state) throw unauthorized("OAuth state is invalid, expired, or already used");
+  if (!state || state.expiresAt <= new Date()) {
+    throw unauthorized("OAuth state is invalid, expired, or already used");
+  }
   return state;
 }
 
@@ -244,9 +246,9 @@ async function getSwiggyAccessToken(userId) {
     userId,
     provider: "SWIGGY",
     status: "CONNECTED",
-    tokenExpiresAt: { $gt: new Date(Date.now() + 60_000) },
   }).select("+tokenEnvelope +tokenEnvelope.iv +tokenEnvelope.ciphertext +tokenEnvelope.tag");
-  if (!connection?.tokenEnvelope) {
+  
+  if (!connection?.tokenEnvelope || connection.tokenExpiresAt <= new Date(Date.now() + 60_000)) {
     throw conflict("SWIGGY_REAUTH_REQUIRED", "Connect or re-authorize your Swiggy account");
   }
   return {

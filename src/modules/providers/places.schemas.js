@@ -13,4 +13,18 @@ const nearbyPlacesSchema = z.object({
   headers: z.object({}).passthrough(),
 });
 
-export { nearbyPlacesSchema };
+const autocompleteSchema = z.object({
+  query: z.object({
+    input: z.string().trim().min(1).max(255),
+    latitude: z.coerce.number().min(-90).max(90).optional(),
+    longitude: z.coerce.number().min(-180).max(180).optional(),
+  }),
+});
+
+const placeDetailsSchema = z.object({
+  query: z.object({
+    placeId: z.string().trim().min(1).max(255),
+  }),
+});
+
+export { nearbyPlacesSchema, autocompleteSchema, placeDetailsSchema };

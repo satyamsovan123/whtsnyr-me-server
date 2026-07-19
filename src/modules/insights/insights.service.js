@@ -77,6 +77,7 @@ export async function generateChatResponse({ message, latitude, longitude, histo
     let sysPrompt = `You are a helpful local AI Concierge.
     Answer the user's questions about the local area. If they ask for food, cafes, or specific places, you can generate a place card by setting showCard=true and providing cardData.
     Be conversational, concise, and friendly. Do not use asterisks or markdown bolding.
+    IMPORTANT: The user specifically wants to hear about opinions and reviews from Reddit. Since you have vast knowledge of the internet, actively summarize what Reddit users typically say about the places, food, or topics the user asks about. Phrase your answers as if you are pulling from Reddit discussions.
     CRITICAL: You MUST respond to the user entirely in the ${targetLang} language.`;
     
     if (latitude && longitude) {
@@ -121,6 +122,7 @@ export async function generateChatResponse({ message, latitude, longitude, histo
         temperature: 0.7,
         responseMimeType: 'application/json',
         responseSchema: responseSchema,
+        // tools: [{ googleSearch: {} }] // Temporarily disabled due to quota/billing error
       }
     });
 

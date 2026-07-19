@@ -5,11 +5,11 @@ import { USER_ROLES, USER_STATUSES } from "./user.model.js";
 
 const objectIdSchema = z.string().regex(/^[a-f\d]{24}$/i, "Invalid MongoDB object id");
 
-const emailSchema = z.string().trim().toLowerCase().email().max(254);
+const emailSchema = z.string().trim().toLowerCase().email("Invalid email address").max(254, "Email is too long");
 const passwordSchema = z
   .string()
-  .min(12)
-  .max(128)
+  .min(6, "Password must be at least 6 characters")
+  .max(128, "Password is too long")
   .regex(/[a-z]/, "Password must contain a lowercase letter")
   .regex(/[A-Z]/, "Password must contain an uppercase letter")
   .regex(/\d/, "Password must contain a number");
@@ -19,7 +19,7 @@ const registerSchema = z.object({
     .object({
       email: emailSchema,
       password: passwordSchema,
-      displayName: z.string().trim().min(2).max(80),
+      displayName: z.string().trim().min(2, "Name must be at least 2 characters").max(80, "Name is too long"),
     })
     .strict(),
   params: z.object({}),
@@ -94,8 +94,8 @@ const addBookmarkSchema = z.object({
     types: z.array(z.string()).optional(),
     distance: z.number().optional(),
     location: z.object({
-      lat: z.number(),
-      lng: z.number()
+      latitude: z.number(),
+      longitude: z.number()
     }).optional()
   }).strict(),
   params: z.object({}),

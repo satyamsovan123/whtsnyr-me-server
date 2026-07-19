@@ -11,7 +11,7 @@ function normalizeError(error) {
     return new AppError({
       status: 400,
       code: "INVALID_IDENTIFIER",
-      message: MESSAGES.INVALID_RESOURCE_ID,
+      message: process.env.NODE_ENV === "development" ? `CastError: ${error.message}` : MESSAGES.INVALID_RESOURCE_ID,
     });
   }
   if (error instanceof mongoose.Error.ValidationError) {

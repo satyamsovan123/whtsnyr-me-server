@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { authenticate, authorize } from "../../common/middleware/auth.js";
+import { authenticate, authorize, optionalAuthenticate } from "../../common/middleware/auth.js";
 import { validate } from "../../common/middleware/validate.js";
 import { asyncHandler } from "../../common/utils/async-handler.js";
 import {
@@ -26,7 +26,7 @@ import {
 
 const specialtyRouter = Router();
 
-specialtyRouter.get("/", validate(listPublicSchema), asyncHandler(publicList));
+specialtyRouter.get("/", optionalAuthenticate, validate(listPublicSchema), asyncHandler(publicList));
 specialtyRouter.get("/:id", validate(getByIdSchema), asyncHandler(publicGet));
 specialtyRouter.get("/:id/swiggy", authenticate, validate(swiggySearchSchema), asyncHandler(findOnSwiggy));
 

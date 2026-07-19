@@ -1,5 +1,5 @@
 import { sendData } from "../../common/utils/api-response.js";
-import { findNearbyPlaces } from "./places.service.js";
+import { findNearbyPlaces, autocompletePlaces, getPlaceDetailsById } from "./places.service.js";
 
 /**
  * Controller to handle fetching dynamic nearby places via the maps provider.
@@ -11,4 +11,16 @@ async function getNearbyPlaces(request, response) {
   return sendData(response, data);
 }
 
-export { getNearbyPlaces };
+async function getAutocomplete(request, response) {
+  const { input, latitude, longitude } = request.validated.query;
+  const data = await autocompletePlaces(input, latitude, longitude);
+  return sendData(response, data);
+}
+
+async function getPlaceDetails(request, response) {
+  const { placeId } = request.validated.query;
+  const data = await getPlaceDetailsById(placeId);
+  return sendData(response, data);
+}
+
+export { getNearbyPlaces, getAutocomplete, getPlaceDetails };

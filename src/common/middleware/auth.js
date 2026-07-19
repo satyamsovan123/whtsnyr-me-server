@@ -53,4 +53,30 @@ function authorize(...allowedRoles) {
   };
 }
 
-export { authenticate, authorize };
+async function optionalAuthenticate(request, _response, next) {
+  try {
+    const authorization = request.get("authorization") || "";
+    const [scheme, token] = authorization.split(" ");
+    
+    if (scheme !== "Bearer" || !token) {
+      return next();
+    }
+
+    const payload = verifyAccessToken(token);
+    const user = await User.findOne({ _id: payload.sub, status: "ACTIVE" });
+    if (!user) {
+      return next();
+    }
+
+    request.auth = {
+      userId: String(user._id),
+      roles: user.roles,
+      user,
+    };
+    return next();
+  } catch (error) {
+    return next();
+  }
+}
+
+export { authenticate, authorize, optionalAuthenticate };

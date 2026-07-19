@@ -1,6 +1,8 @@
 import { conflict, notFound, badRequest } from "../../common/errors/app-error.js";
 import { toSlug } from "../../common/utils/slug.js";
 import { Specialty } from "./specialty.model.js";
+import { findNearbyPlaces } from "../providers/places.service.js";
+import { callSwiggyReadTool } from "../providers/swiggy-mcp.service.js";
 
 const allowedFields = [
   "areaId",
@@ -37,18 +39,79 @@ function publicFilter(query) {
   return filter;
 }
 
-async function listPublic(query) {
+async function listPublic(query, userId) {
+  if (query.latitude && query.longitude) {
+    const documents = [];
+    const lat = parseFloat(query.latitude);
+    const lng = parseFloat(query.longitude);
+
+    if (userId) {
+      let addressId = null;
+      try {
+        const addrs = await callSwiggyReadTool(userId, "food", "get_addresses", {});
+        if (addrs && Array.isArray(addrs.addresses) && addrs.addresses.length > 0) {
+           addressId = addrs.addresses[0].id;
+        } else if (Array.isArray(addrs) && addrs.length > 0) {
+           addressId = addrs[0].id;
+        }
+      } catch (e) {
+        console.error("Swiggy get_addresses error:", e);
+      }
+
+      if (addressId) {
+        try {
+          const food = await callSwiggyReadTool(userId, "food", "search_restaurants", {
+            query: "famous local food", addressId
+          });
+          if (Array.isArray(food)) {
+             documents.push(...food.slice(0, 3).map(f => ({
+               name: f.name || f.title,
+               description: (f.cuisines ? f.cuisines.join(", ") : null) || f.description || "Popular local food spot",
+               mediaUrls: f.imageId ? [`https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/${f.imageId}`] : []
+             })));
+          }
+        } catch (e) {
+          console.error("Swiggy food error in specialties:", e);
+        }
+
+        try {
+          const instamart = await callSwiggyReadTool(userId, "instamart", "search_products", {
+            query: "local souvenir", addressId
+          });
+          if (Array.isArray(instamart)) {
+             documents.push(...instamart.slice(0, 3).map(i => ({
+               name: i.name || i.title,
+               description: i.category || i.description || "Local item available on Instamart",
+               mediaUrls: i.imageId ? [`https://instamart-media-assets.swiggy.com/instamart/image/upload/fl_lossy,f_auto,q_auto,w_660/${i.imageId}`] : []
+             })));
+          }
+        } catch (e) {
+          console.error("Swiggy instamart error in specialties:", e);
+        }
+      }
+    }
+
+    for (let i = documents.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [documents[i], documents[j]] = [documents[j], documents[i]];
+    }
+
+    if (documents.length > 0) {
+      return { documents, meta: { limit: query.limit, nextCursor: null } };
+    }
+  }
+
   const filter = publicFilter(query);
   const mongoQuery = Specialty.find(filter).limit(query.limit + 1);
   mongoQuery.sort({ _id: -1 });
-  const documents = await mongoQuery.lean();
-  const hasMore = documents.length > query.limit;
-  if (hasMore) documents.pop();
+  const dbDocs = await mongoQuery.lean();
+  const hasMore = dbDocs.length > query.limit;
+  if (hasMore) dbDocs.pop();
   return {
-    documents,
+    documents: dbDocs,
     meta: {
       limit: query.limit,
-      nextCursor: hasMore ? String(documents.at(-1)._id) : null,
+      nextCursor: hasMore ? String(dbDocs.at(-1)._id) : null,
     },
   };
 }
