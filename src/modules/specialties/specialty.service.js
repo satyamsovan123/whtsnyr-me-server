@@ -59,41 +59,52 @@ async function listPublic(query, userId) {
       }
 
       if (addressId) {
+        // Search Swiggy Food for highest rated local restaurants
         try {
           const food = await callSwiggyReadTool(userId, "food", "search_restaurants", {
-            query: "famous local food", addressId
+            query: "local", addressId
           });
-          if (Array.isArray(food)) {
-             documents.push(...food.slice(0, 3).map(f => ({
-               name: f.name || f.title,
-               description: (f.cuisines ? f.cuisines.join(", ") : null) || f.description || "Popular local food spot",
-               mediaUrls: f.imageId ? [`https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/${f.imageId}`] : []
-             })));
+          const restaurants = Array.isArray(food?.data) ? food.data : (food?.data?.restaurants || food?.restaurants || (Array.isArray(food) ? food : null));
+          if (Array.isArray(restaurants)) {
+            const sorted = [...restaurants]
+              .sort((a, b) => (b.avgRating || b.rating || 0) - (a.avgRating || a.rating || 0));
+            documents.push(...sorted.slice(0, 3).map(f => ({
+              name: f.name || f.title,
+              description: (f.cuisines ? f.cuisines.join(", ") : null) || f.description || "Local food spot",
+              category: "Local Food",
+              rating: f.avgRating || f.rating || null,
+              distance: f.distanceKm ? `${f.distanceKm} km` : (f.sla?.deliveryTime ? `${f.sla.deliveryTime} min` : null),
+              priceRange: f.costForTwo ? `${f.costForTwo}` : null,
+              mediaUrls: f.imageUrl ? [f.imageUrl] : (f.imageId ? [`https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/${f.imageId}`] : []),
+              _source: "swiggy_food",
+              status: f.availabilityStatus || "UNKNOWN"
+            })));
           }
         } catch (e) {
           console.error("Swiggy food error in specialties:", e);
         }
 
+        // Search Instamart for souvenirs/local products
         try {
           const instamart = await callSwiggyReadTool(userId, "instamart", "search_products", {
-            query: "local souvenir", addressId
+            query: "snack", addressId
           });
-          if (Array.isArray(instamart)) {
-             documents.push(...instamart.slice(0, 3).map(i => ({
-               name: i.name || i.title,
-               description: i.category || i.description || "Local item available on Instamart",
-               mediaUrls: i.imageId ? [`https://instamart-media-assets.swiggy.com/instamart/image/upload/fl_lossy,f_auto,q_auto,w_660/${i.imageId}`] : []
-             })));
+          const products = Array.isArray(instamart?.data) ? instamart.data : (instamart?.data?.products || instamart?.products || (Array.isArray(instamart) ? instamart : null));
+          if (Array.isArray(products)) {
+            documents.push(...products.slice(0, 3).map(i => ({
+              name: i.name || i.title,
+              description: i.category || i.description || "Local product on Instamart",
+              category: "Local Product",
+              rating: i.rating || null,
+              priceRange: i.price ? `₹${i.price}` : (i.variants?.[0]?.price ? `₹${i.variants[0].price}` : null),
+              mediaUrls: i.imageUrl ? [i.imageUrl] : (i.imageId ? [`https://instamart-media-assets.swiggy.com/instamart/image/upload/fl_lossy,f_auto,q_auto,w_660/${i.imageId}`] : []),
+              _source: "swiggy_instamart"
+            })));
           }
         } catch (e) {
           console.error("Swiggy instamart error in specialties:", e);
         }
       }
-    }
-
-    for (let i = documents.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [documents[i], documents[j]] = [documents[j], documents[i]];
     }
 
     if (documents.length > 0) {

@@ -202,9 +202,15 @@ async function placeFoodOrder(request, response) {
 }
 
 async function listFoodOrders(request, response) {
+  let { addressId } = request.validated?.query || {};
+  if (!addressId) {
+    const addrs = await callSwiggyReadTool(request.auth.userId, "food", "get_addresses", {});
+    const list = Array.isArray(addrs?.addresses) ? addrs.addresses : (Array.isArray(addrs) ? addrs : []);
+    if (list.length > 0) addressId = list[0].id;
+  }
   return sendData(
     response,
-    await callSwiggyReadTool(request.auth.userId, "food", "get_food_orders", {})
+    await callSwiggyReadTool(request.auth.userId, "food", "get_food_orders", addressId ? { addressId } : {})
   );
 }
 

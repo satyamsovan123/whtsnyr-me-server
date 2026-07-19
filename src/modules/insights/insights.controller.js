@@ -16,6 +16,6 @@ export const getInsights = asyncHandler(async (req, res) => {
 
 export const chatInsights = asyncHandler(async (req, res) => {
   const { message, latitude, longitude, history, language } = req.body;
-  const result = await generateChatResponse({ message, latitude, longitude, history, language });
+  const result = await generateChatResponse({ message, latitude, longitude, history, language, userId: req.auth?.userId });
   return sendData(res, result);
 });

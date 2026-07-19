@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { getInsights, chatInsights } from './insights.controller.js';
+import { optionalAuthenticate } from '../../common/middleware/auth.js';
 import { validate } from '../../common/middleware/validate.js';
 import { z } from 'zod';
 
@@ -26,6 +27,6 @@ const router = Router();
 // Endpoint doesn't require auth by default since it's an open dashboard, 
 // but we add schema validation
 router.post('/generate', validate(generateInsightsSchema), getInsights);
-router.post('/chat', validate(chatSchema), chatInsights);
+router.post('/chat', optionalAuthenticate, validate(chatSchema), chatInsights);
 
 export { router as insightsRouter };
